@@ -61,10 +61,13 @@ The normative selection, privacy, and visual-quality rules live in `shared/` so 
 
 ## Editorial visual profile
 
-`editorial-v1` is the global default profile for HTML visuals. It uses a
+`editorial-v1.1` is the global default profile for HTML visuals. It refines v1
+with shared node-layout, output-contract, and visual-acceptance rules while
+preserving the same restrained palette. It uses a
 restrained paper-and-ink treatment, semantic tokens, local system fonts, inline
 generic icons, and a nine-node / twelve-connector default complexity budget.
-`legacy-dark` remains available only when explicitly requested. Each material
+`editorial-v1` remains the previous version and `legacy-dark` is available only
+when explicitly requested. Each material
 style change is versioned (`editorial-v1.1`, `editorial-v1.2`, and so on):
 record the candidate source and adaptation decision in
 `shared/inspiration-registry.md`, obtain approval, update the profile and one

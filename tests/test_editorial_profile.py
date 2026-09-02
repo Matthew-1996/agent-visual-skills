@@ -80,6 +80,53 @@ class DiagramMarkup(HTMLParser):
             self.labels.append(data.strip())
 
 
+class DiagramGeometry(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.in_diagram = False
+        self.diagram_attrs = {}
+        self.leading_children = []
+        self.ids = set()
+        self.node_rects = []
+        self.connector_paths = []
+        self.node_stack = []
+        self.node_rect_seen = []
+        self.centered_text = 0
+
+    def handle_starttag(self, tag, attrs):
+        attributes = dict(attrs)
+        classes = attributes.get("class", "").split()
+        if tag == "svg" and "diagram" in classes:
+            self.in_diagram = True
+            self.diagram_attrs = attributes
+            return
+        if not self.in_diagram:
+            return
+        if len(self.leading_children) < 2 and tag in {"title", "desc", "defs", "rect", "g", "path"}:
+            self.leading_children.append(tag)
+        if "id" in attributes:
+            self.ids.add(attributes["id"])
+        if tag == "g" and "node" in classes:
+            self.node_stack.append(attributes.get("data-layout"))
+            self.node_rect_seen.append(False)
+        if tag == "rect" and self.node_stack and not self.node_rect_seen[-1]:
+            self.node_rects.append(attributes)
+            self.node_rect_seen[-1] = True
+        if tag == "path" and "connector" in classes:
+            self.connector_paths.append(attributes.get("d", ""))
+        if tag == "text" and self.node_stack and self.node_stack[-1] == "simple-center":
+            self.centered_text += attributes.get("text-anchor") == "middle"
+
+    def handle_endtag(self, tag):
+        if not self.in_diagram:
+            return
+        if tag == "g" and self.node_stack:
+            self.node_stack.pop()
+            self.node_rect_seen.pop()
+        if tag == "svg" and not self.node_stack:
+            self.in_diagram = False
+
+
 def test_editorial_profile_is_the_documented_global_default_with_legacy_opt_in():
     style = (ROOT / "shared/visual-style.md").read_text(encoding="utf-8")
     editorial = (ROOT / "shared/style-profiles/editorial-v1.md").read_text(encoding="utf-8")
@@ -130,6 +177,31 @@ def test_golden_architecture_names_all_six_skills():
     markup = (ROOT / "examples/editorial-v1-system-architecture.html").read_text(encoding="utf-8")
 
     assert all(skill in markup for skill in SIX_SKILLS)
+
+
+def test_golden_architecture_exposes_accessible_names_and_grid_aligned_geometry():
+    markup = (ROOT / "examples/editorial-v1-system-architecture.html").read_text(encoding="utf-8")
+    diagram = DiagramGeometry()
+    diagram.feed(markup)
+
+    labelled_by = diagram.diagram_attrs["aria-labelledby"].split()
+    assert diagram.leading_children == ["title", "desc"]
+    assert labelled_by == ["editorial-v11-title", "editorial-v11-desc"]
+    assert set(labelled_by) <= diagram.ids
+    assert diagram.node_rects
+    for rect in diagram.node_rects:
+        for attribute in ("x", "y", "width", "height"):
+            assert float(rect[attribute]) % 4 == 0
+
+
+def test_golden_architecture_centres_simple_nodes_and_rounds_orthogonal_connectors():
+    markup = (ROOT / "examples/editorial-v1-system-architecture.html").read_text(encoding="utf-8")
+    diagram = DiagramGeometry()
+    diagram.feed(markup)
+
+    assert diagram.centered_text >= 10
+    assert diagram.connector_paths
+    assert all("Q" in path or "q" in path for path in diagram.connector_paths)
 
 
 def test_html_artifacts_use_only_semantic_palette_tokens_and_accent_tint():

@@ -92,7 +92,7 @@ def test_router_directs_designed_html_to_the_active_profile_and_iconography():
     stable = "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/"
 
     assert "designed HTML" in router
-    assert f"{stable}style-profiles/editorial-v1.md" in router
+    assert f"{stable}style-profiles/editorial-v1.1.md" in router
     assert f"{stable}iconography.md" in router
 
 
@@ -110,7 +110,7 @@ def test_router_defaults_to_one_desktop_html_and_defers_other_exports():
 
 
 def test_editorial_profile_is_read_before_html_generation():
-    profile = "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/style-profiles/editorial-v1.md"
+    profile = "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/style-profiles/editorial-v1.1.md"
     iconography = "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/iconography.md"
 
     for name in ("architecture-diagram", "infographic", "web-visual"):

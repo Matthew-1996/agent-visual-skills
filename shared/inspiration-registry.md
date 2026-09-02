@@ -5,9 +5,14 @@
 - Source and license: MIT; see
   `LICENSES/CathrynLavery-diagram-design-MIT.txt`.
 - Adapted: restrained editorial palette, semantic tokens, 4px rhythm,
-  connector discipline, complexity budget, and the generic icon grammar.
+  connector discipline, complexity/degrade budgets, generic icon grammar,
+  two node-interior patterns, output dials, CJK sizing, accessible SVG naming,
+  fidelity ledgers, and an evidence-based visual acceptance gate.
 - Rejected: remote Google Fonts and the first-run onboarding gate, because
   this repository is offline-first and already has an approved global default.
+- Also rejected by default: automatic dependency installation, animation,
+  hosted assets, automatic raster/vector export, and wholesale inclusion of
+  all type-specific manuals. Specialists adopt only relevant universal rules.
 - Implementation note: this iteration uses original geometric SVG primitives;
   no Tabler icon paths were copied, so no Tabler notice is required.
 

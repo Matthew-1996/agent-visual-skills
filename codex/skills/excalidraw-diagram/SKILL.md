@@ -21,4 +21,4 @@ Use the public CLI for the whole QA loop. Build the repository-local bundle with
 Audit exits 0 only for a clean scene and 3 when findings remain. Require a
 second zero-finding audit after `fix`.
 
-Before delivery, read `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/codex/skills/excalidraw-diagram/references/visual-qa.md`, decode the PNG, inspect it at original resolution, and revise until the static and visual checks both pass. Do not install dependencies during rendering.
+Before delivery, read `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/codex/skills/excalidraw-diagram/references/visual-qa.md` and `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/visual-acceptance.md`, decode the PNG, inspect it at original resolution, and revise until the applicable static and visual checks pass. Do not install dependencies during rendering.

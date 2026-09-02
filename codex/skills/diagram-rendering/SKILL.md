@@ -31,7 +31,10 @@ CLI rejects a D2 `.png` request before launching `d2`, preventing a managed-
 browser download. Mermaid accepts `.mmd` or `.mermaid`, and Graphviz accepts
 `.dot` or `.gv`. Charts render `.png` only.
 Decode and inspect the output for labels, bounds, real relationships, and
-legibility before delivery. Do not install dependencies or use a hosted renderer to recover from failure.
+legibility before delivery. Apply the geometry, density, and evidence rules in
+`${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/visual-acceptance.md`
+where the selected renderer permits them. Do not install dependencies or use a
+hosted renderer to recover from failure.
 
 Route whiteboard-like spatial reasoning to `excalidraw-diagram`; architecture
 presentations to `architecture-diagram`; polished static explainers to

@@ -19,7 +19,8 @@ quota.
    for the routing matrix and
    `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/visual-style.md` for
    delivery constraints. A designed HTML must consume the active profile at
-   `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/style-profiles/editorial-v1.md`
+   `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/style-profiles/editorial-v1.1.md`,
+   `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/output-contract.md`,
    and `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/iconography.md`.
 4. Choose the lowest sufficient level and exactly one primary representation:
    - Level 1: inline prose, Markdown table, tree, timeline, or Unicode flow
@@ -38,6 +39,8 @@ quota.
    the user explicitly says the result is for mobile or asks for that export;
    perform the conversion only when requested.
 7. Retain editable source for rendered output and inspect it before delivery.
+   Apply `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/visual-acceptance.md`
+   and report only current-run evidence.
    Read `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/codex/skills/visual-communication/references/examples.md`
    only when choosing a summary form.
 

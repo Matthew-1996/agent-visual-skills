@@ -2,8 +2,9 @@
 
 ## Active profile
 
-`editorial-v1` in `shared/style-profiles/editorial-v1.md` is the global default.
-Read it with `shared/iconography.md` before generating HTML.
+`editorial-v1.1` in `shared/style-profiles/editorial-v1.1.md` is the global default.
+Read it with `shared/iconography.md`; the profile routes to the shared
+node, output, and acceptance rules. `editorial-v1` remains the previous profile.
 `legacy-dark` in `shared/style-profiles/legacy-dark.md` remains opt-in only.
 
 ## Typography and language
@@ -12,7 +13,14 @@ Prefer 中文 output and Chinese system fonts in this order: `PingFang SC`, `Hir
 
 ## Layout
 
-Use a readable hierarchy, generous whitespace, and one main message. In this installation, assume the user is viewing on desktop and deliver exactly one self-contained, locally previewable HTML by default. Do not generate or attach a mobile variant, SVG, or PNG unless the user explicitly requests that target or conversion. When mobile is requested, test at a `390px` viewport, avoid horizontal overflow, keep touch targets and labels legible, and wrap long text rather than shrinking it below readability. HTML must use inline CSS/SVG and have no network dependency.
+Use a readable hierarchy, generous whitespace, one main message, and the four
+dials in `shared/output-contract.md`. In this installation, assume the user is
+viewing on desktop and deliver exactly one self-contained, locally previewable
+HTML by default. Do not generate or attach a mobile variant, SVG, or PNG unless
+the user explicitly requests that target or conversion. When mobile is
+requested, test at a `390px` viewport, avoid horizontal overflow, keep touch
+targets and labels legible, and wrap long text rather than shrinking it below
+readability. HTML must use inline CSS/SVG and have no network dependency.
 
 ## Data integrity
 
