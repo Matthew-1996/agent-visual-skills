@@ -22,3 +22,11 @@ The bad fixture recorded `text_outside_shape`, `font_size`, `overlap`, `arrow_te
 ## Revision made
 
 The first render showed the second arrow floating below the nodes, which weakened the relationship and scattered the lower composition. The scene was revised once so that arrow connects the planning Agent to the local tools node. Its `调用工具` caption is the deliberate bad-scene intersection; the deterministic fixer moves it to the next clear grid position below the connected arrow. The rebuilt and rerendered PNG passed all five checks above.
+
+## Review fix round 1
+
+The margin audit now measures `appState.exportPadding`, the same value passed to the Excalidraw export API. The bad fixture uses `exportPadding: 0`; the deterministic fix raises it to 40, and the fixed scene audit returns zero issues. Optional `appState.width` and `appState.height` no longer stand in for export margin.
+
+Rotated geometry is included in static QA: text/shape AABBs and arrow segments are rotated by the Excalidraw radian `angle` around their element center before overlap/intersection checks. Focused regressions cover a text overlap and an arrow/text crossing that exist only after rotation.
+
+The corrected fixed fixture was rendered again and inspected at original 1173 × 654 resolution. Overlap, arrow crossing, clipping, Chinese glyph readability, and balance remain passes; the 40px exporter padding is visibly present around the full content.

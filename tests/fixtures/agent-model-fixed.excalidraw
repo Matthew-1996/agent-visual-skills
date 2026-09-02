@@ -6,8 +6,8 @@
     {
       "id": "title",
       "type": "text",
-      "x": 40.0,
-      "y": 58.0,
+      "x": 20,
+      "y": 18,
       "width": 440,
       "height": 42,
       "angle": 0,
@@ -43,8 +43,8 @@
     {
       "id": "user-box",
       "type": "rectangle",
-      "x": 80.0,
-      "y": 220.0,
+      "x": 60,
+      "y": 180,
       "width": 250,
       "height": 180,
       "angle": 0,
@@ -78,8 +78,8 @@
     {
       "id": "user-label",
       "type": "text",
-      "x": 125.0,
-      "y": 275.0,
+      "x": 105,
+      "y": 235,
       "width": 160,
       "height": 60,
       "angle": 0,
@@ -115,8 +115,8 @@
     {
       "id": "agent-box",
       "type": "rectangle",
-      "x": 450.0,
-      "y": 220.0,
+      "x": 430,
+      "y": 180,
       "width": 250,
       "height": 180,
       "angle": 0,
@@ -150,8 +150,8 @@
     {
       "id": "agent-label",
       "type": "text",
-      "x": 485.0,
-      "y": 268.0,
+      "x": 465,
+      "y": 228,
       "width": 180,
       "height": 70,
       "angle": 0,
@@ -187,8 +187,8 @@
     {
       "id": "tool-box",
       "type": "rectangle",
-      "x": 820.0,
-      "y": 220.0,
+      "x": 800.0,
+      "y": 180.0,
       "width": 313.0,
       "height": 180.0,
       "angle": 0,
@@ -222,8 +222,8 @@
     {
       "id": "tool-label",
       "type": "text",
-      "x": 845.0,
-      "y": 255.0,
+      "x": 825,
+      "y": 215,
       "width": 280,
       "height": 110,
       "angle": 0,
@@ -259,8 +259,8 @@
     {
       "id": "overlap-a",
       "type": "text",
-      "x": 440.0,
-      "y": 470.0,
+      "x": 420,
+      "y": 430,
       "width": 270,
       "height": 32,
       "angle": 0,
@@ -296,8 +296,8 @@
     {
       "id": "overlap-b",
       "type": "text",
-      "x": 460.0,
-      "y": 540.0,
+      "x": 440.0,
+      "y": 500.0,
       "width": 270,
       "height": 32,
       "angle": 0,
@@ -333,8 +333,8 @@
     {
       "id": "arrow-user-agent",
       "type": "arrow",
-      "x": 330.0,
-      "y": 310.0,
+      "x": 310,
+      "y": 270,
       "width": 120,
       "height": 0,
       "angle": 0,
@@ -379,8 +379,8 @@
     {
       "id": "arrow-agent-tool",
       "type": "arrow",
-      "x": 700.0,
-      "y": 310.0,
+      "x": 680,
+      "y": 270,
       "width": 120,
       "height": 0,
       "angle": 0,
@@ -425,8 +425,8 @@
     {
       "id": "feedback",
       "type": "text",
-      "x": 720.0,
-      "y": 600.0,
+      "x": 700.0,
+      "y": 560.0,
       "width": 100,
       "height": 32,
       "angle": 0,
@@ -465,8 +465,8 @@
     "exportBackground": true,
     "exportWithDarkMode": false,
     "exportPadding": 40,
-    "width": 1180,
-    "height": 680
+    "width": 1160,
+    "height": 620
   },
   "files": {}
 }

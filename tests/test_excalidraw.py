@@ -1,4 +1,5 @@
 import json
+import math
 from pathlib import Path
 
 from PIL import Image
@@ -68,6 +69,94 @@ def test_audit_reports_malformed_arrow_points_without_crashing():
 
     assert any(
         issue.code == "invalid_bounds" and issue.element_ids == ("arrow-user-agent",)
+        for issue in issues
+    )
+
+
+def test_export_padding_below_renderer_minimum_is_detected_then_fixed():
+    """Catch a margin audit that measures scene coordinates instead of exporter padding."""
+    scene = json.loads(FIXED_FIXTURE.read_text(encoding="utf-8"))
+    scene["appState"]["exportPadding"] = 0
+
+    issues = audit_scene(scene)
+    assert any(issue.code == "canvas_margin" for issue in issues)
+
+    fixed = fix_scene_layout(scene, issues)
+    assert fixed["appState"]["exportPadding"] == 40
+    assert fixed == fix_scene_layout(scene, issues)
+    assert audit_scene(fixed) == []
+
+
+def test_rotated_text_aabbs_are_used_for_overlap_detection():
+    """Catch two rendered text boxes that overlap only after one is rotated."""
+    scene = {
+        "elements": [
+            {
+                "id": "rotated-label",
+                "type": "text",
+                "x": 100,
+                "y": 100,
+                "width": 100,
+                "height": 20,
+                "angle": math.pi / 4,
+                "fontSize": 20,
+            },
+            {
+                "id": "nearby-label",
+                "type": "text",
+                "x": 185,
+                "y": 130,
+                "width": 50,
+                "height": 20,
+                "angle": 0,
+                "fontSize": 20,
+            },
+        ],
+        "appState": {"exportPadding": 40},
+    }
+
+    issues = audit_scene(scene)
+
+    assert any(
+        issue.code == "overlap"
+        and issue.element_ids == ("rotated-label", "nearby-label")
+        for issue in issues
+    )
+
+
+def test_rotated_arrow_segments_are_used_for_text_intersections():
+    """Catch an arrow that crosses text only after Excalidraw applies its angle."""
+    scene = {
+        "elements": [
+            {
+                "id": "rotated-arrow",
+                "type": "arrow",
+                "x": 100,
+                "y": 150,
+                "width": 100,
+                "height": 0,
+                "angle": math.pi / 2,
+                "points": [[0, 0], [100, 0]],
+            },
+            {
+                "id": "crossed-label",
+                "type": "text",
+                "x": 140,
+                "y": 170,
+                "width": 20,
+                "height": 20,
+                "angle": 0,
+                "fontSize": 20,
+            },
+        ],
+        "appState": {"exportPadding": 40},
+    }
+
+    issues = audit_scene(scene)
+
+    assert any(
+        issue.code == "arrow_text_intersection"
+        and issue.element_ids == ("rotated-arrow", "crossed-label")
         for issue in issues
     )
 

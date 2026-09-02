@@ -421,7 +421,7 @@
     "viewBackgroundColor": "#f8fafc",
     "exportBackground": true,
     "exportWithDarkMode": false,
-    "exportPadding": 40,
+    "exportPadding": 0,
     "width": 1160,
     "height": 620
   },

@@ -11,7 +11,9 @@ Create Excalidraw JSON with `type: "excalidraw"`, `version: 2`, an `elements` ar
 
 ## Geometry
 
-Lay out on a 20px grid with at least 40px around the full drawing. Store a useful `appState.width` and `appState.height`; the fixer expands these values when content moves. Prefer left-to-right reading order and keep peers aligned.
+Lay out on a 20px grid and set `appState.exportPadding` to at least 40px. This value is the border contract consumed by the exporter; scene coordinates and optional `appState.width` or `appState.height` do not define exported margin. Prefer left-to-right reading order and keep peers aligned.
+
+`angle` is measured in radians around the element center. Static QA rotates rectangle and text corners, ellipse and diamond geometry, and arrow/line points before computing AABBs and intersections. Use a finite numeric angle; invalid geometry is a blocking `invalid_bounds` finding.
 
 Arrows require two or more local `points`. Route them through whitespace, keep their shafts out of text bounds, and use arrowheads only where direction has meaning. Keep text boxes separate even when their glyphs look sparse; the static audit uses declared bounds.
 
@@ -28,4 +30,4 @@ if issues:
 assert audit_scene(scene) == []
 ```
 
-The deterministic fixer normalizes invalid bounds, raises small type to 16px, expands containers, moves colliding text or its container to the next free 20px grid position, and expands the recorded canvas margin. Save the fixed dictionary as the final editable scene before rendering.
+The deterministic fixer normalizes invalid bounds, raises small type to 16px, expands containers, moves colliding text or its container to the next free 20px grid position, and raises `exportPadding` to 40px when needed. Save the fixed dictionary as the final editable scene before rendering.

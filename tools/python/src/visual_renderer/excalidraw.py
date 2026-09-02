@@ -63,19 +63,69 @@ def _linear_points(element: dict) -> list[tuple[float, float]] | None:
     return [(float(point[0]), float(point[1])) for point in points]
 
 
+def _angle(element: dict) -> float | None:
+    value = element.get("angle", 0)
+    return float(value) if _number(value) else None
+
+
+def _rotate_point(
+    point: tuple[float, float], center: tuple[float, float], angle: float
+) -> tuple[float, float]:
+    cosine = math.cos(angle)
+    sine = math.sin(angle)
+    delta_x = point[0] - center[0]
+    delta_y = point[1] - center[1]
+    return (
+        center[0] + delta_x * cosine - delta_y * sine,
+        center[1] + delta_x * sine + delta_y * cosine,
+    )
+
+
+def _bounds_from_points(points: list[tuple[float, float]]) -> Bounds:
+    xs = [point[0] for point in points]
+    ys = [point[1] for point in points]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
 def _raw_bounds(element: dict) -> Bounds | None:
     values = [element.get(key) for key in ("x", "y", "width", "height")]
     if not all(_number(value) for value in values):
         return None
     x, y, width, height = (float(value) for value in values)
+    angle = _angle(element)
+    if angle is None:
+        return None
     if element.get("type") in {"arrow", "line"}:
         points = _linear_points(element)
         if points is None:
             return None
-        xs = [x + point[0] for point in points]
-        ys = [y + point[1] for point in points]
-        return min(xs), min(ys), max(xs), max(ys)
-    return min(x, x + width), min(y, y + height), max(x, x + width), max(y, y + height)
+        absolute = [(x + point[0], y + point[1]) for point in points]
+        unrotated = _bounds_from_points(absolute)
+        center = ((unrotated[0] + unrotated[2]) / 2, (unrotated[1] + unrotated[3]) / 2)
+        return _bounds_from_points([_rotate_point(point, center, angle) for point in absolute])
+
+    center = (x + width / 2, y + height / 2)
+    if element.get("type") == "ellipse":
+        half_width = abs(width) / 2
+        half_height = abs(height) / 2
+        rotated_width = math.hypot(half_width * math.cos(angle), half_height * math.sin(angle))
+        rotated_height = math.hypot(half_height * math.cos(angle), half_width * math.sin(angle))
+        return (
+            center[0] - rotated_width,
+            center[1] - rotated_height,
+            center[0] + rotated_width,
+            center[1] + rotated_height,
+        )
+    if element.get("type") == "diamond":
+        points = [
+            (center[0], y),
+            (x + width, center[1]),
+            (center[0], y + height),
+            (x, center[1]),
+        ]
+    else:
+        points = [(x, y), (x + width, y), (x + width, y + height), (x, y + height)]
+    return _bounds_from_points([_rotate_point(point, center, angle) for point in points])
 
 
 def _valid_bounds(element: dict) -> bool:
@@ -85,7 +135,14 @@ def _valid_bounds(element: dict) -> bool:
     left, top, right, bottom = bounds
     if element.get("type") in {"arrow", "line"}:
         return _linear_points(element) is not None and (right > left or bottom > top)
-    return right > left and bottom > top
+    return (
+        _number(element.get("width"))
+        and _number(element.get("height"))
+        and float(element["width"]) > 0
+        and float(element["height"]) > 0
+        and right > left
+        and bottom > top
+    )
 
 
 def _overlap(first: Bounds, second: Bounds, padding: float = 0) -> bool:
@@ -149,7 +206,12 @@ def _arrow_segments(element: dict) -> list[tuple[tuple[float, float], tuple[floa
     y = float(element.get("y", 0))
     points = _linear_points(element) or []
     absolute = [(x + point[0], y + point[1]) for point in points]
-    return list(zip(absolute, absolute[1:]))
+    if not absolute:
+        return []
+    bounds = _bounds_from_points(absolute)
+    center = ((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
+    rotated = [_rotate_point(point, center, _angle(element) or 0) for point in absolute]
+    return list(zip(rotated, rotated[1:]))
 
 
 def audit_scene(scene: dict) -> list[Issue]:
@@ -220,28 +282,16 @@ def audit_scene(scene: dict) -> list[Issue]:
                     )
                 )
 
-    valid = [(element, _raw_bounds(element)) for element in elements if _valid_bounds(element)]
-    if valid:
-        app_state = scene.get("appState") if isinstance(scene.get("appState"), dict) else {}
-        width = app_state.get("width")
-        height = app_state.get("height")
-        outside: list[str] = []
-        for element, bounds in valid:
-            left, top, right, bottom = bounds  # type: ignore[misc]
-            if left < MIN_CANVAS_MARGIN or top < MIN_CANVAS_MARGIN:
-                outside.append(str(element.get("id")))
-            elif _number(width) and right > float(width) - MIN_CANVAS_MARGIN:
-                outside.append(str(element.get("id")))
-            elif _number(height) and bottom > float(height) - MIN_CANVAS_MARGIN:
-                outside.append(str(element.get("id")))
-        if outside:
-            issues.append(
-                Issue(
-                    "canvas_margin",
-                    tuple(outside),
-                    f"elements must keep a {MIN_CANVAS_MARGIN}px canvas margin",
-                )
+    app_state = scene.get("appState") if isinstance(scene.get("appState"), dict) else {}
+    export_padding = app_state.get("exportPadding")
+    if _number(export_padding) and float(export_padding) < MIN_CANVAS_MARGIN:
+        issues.append(
+            Issue(
+                "canvas_margin",
+                (),
+                f"exportPadding must be at least {MIN_CANVAS_MARGIN}px",
             )
+        )
     return issues
 
 
@@ -346,29 +396,13 @@ def _move_text_to_free_grid(text: dict, by_id: dict[str, dict], elements: list[d
     raise ValueError(f"no collision-free grid position found for text: {text.get('id')}")
 
 
-def _ensure_canvas_margin(scene: dict, elements: list[dict]) -> None:
-    drawable = [element for element in elements if _valid_bounds(element)]
-    if not drawable:
-        return
-    bounds = _combined_bounds(drawable)
-    dx = _ceil_grid(max(0, MIN_CANVAS_MARGIN - bounds[0]))
-    dy = _ceil_grid(max(0, MIN_CANVAS_MARGIN - bounds[1]))
-    if dx or dy:
-        for element in elements:
-            if _number(element.get("x")):
-                element["x"] = float(element["x"]) + dx
-            if _number(element.get("y")):
-                element["y"] = float(element["y"]) + dy
-    bounds = _combined_bounds(drawable)
+def _ensure_export_padding(scene: dict) -> None:
     app_state = scene.setdefault("appState", {})
-    current_width = float(app_state.get("width", 0)) if _number(app_state.get("width")) else 0
-    current_height = float(app_state.get("height", 0)) if _number(app_state.get("height")) else 0
-    app_state["width"] = _ceil_grid(max(current_width + dx, bounds[2] + MIN_CANVAS_MARGIN))
-    app_state["height"] = _ceil_grid(max(current_height + dy, bounds[3] + MIN_CANVAS_MARGIN))
-    app_state["exportPadding"] = max(
-        MIN_CANVAS_MARGIN,
-        int(app_state.get("exportPadding", 0)) if _number(app_state.get("exportPadding")) else 0,
-    )
+    export_padding = app_state.get("exportPadding")
+    if _number(export_padding):
+        app_state["exportPadding"] = max(MIN_CANVAS_MARGIN, int(export_padding))
+    else:
+        app_state["exportPadding"] = MIN_CANVAS_MARGIN
 
 
 def fix_scene_layout(scene: dict, issues: list[Issue]) -> dict:
@@ -420,8 +454,8 @@ def fix_scene_layout(scene: dict, issues: list[Issue]) -> dict:
                     moved.add(text_id)
                     changed = True
 
-        if any(issue.code == "canvas_margin" for issue in current) or moved:
-            _ensure_canvas_margin(fixed, elements)
+        if any(issue.code == "canvas_margin" for issue in current):
+            _ensure_export_padding(fixed)
             changed = True
         if not changed:
             break
