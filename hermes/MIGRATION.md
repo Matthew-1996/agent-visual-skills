@@ -6,6 +6,31 @@ Ubuntu, and **E** Codex-specific and not recommended for Hermes. The shared
 policy remains Agent-agnostic: no entry relies on a username, a Codex home, or
 an Agent brand.
 
+## A. Copy unchanged
+
+Portable policy, generic references, notices, and final font fallbacks can be
+copied without behavior changes.
+
+## B. Adapt tool or Agent calls
+
+Keep the behavior contract, but replace Codex discovery and macOS browser calls
+with Hermes instructions and the resolved Ubuntu Chromium executable.
+
+## C. Mac-only; omit on Ubuntu
+
+Do not carry Homebrew scripts, macOS application paths, or Mac-only fonts into
+the Hermes runtime.
+
+## D. Reinstall on Ubuntu
+
+Install system Graphviz, D2, Chromium, and Noto CJK, then recreate the
+repository-local npm and uv dependency trees.
+
+## E. Codex-specific; do not migrate
+
+Codex `SKILL.md` discovery metadata and `${CODEX_HOME}/skills` symlinks are not
+Hermes integration mechanisms. Re-express only the portable behavior.
+
 ## Capability, reference, renderer, and invocation matrix
 
 | Item | Class | Hermes treatment |

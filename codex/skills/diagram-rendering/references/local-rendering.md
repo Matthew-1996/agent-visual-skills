@@ -6,7 +6,7 @@ to the local renderer. Use the format-specific source extension and output:
 | Format | Source extension | Command selector | Output | Best for |
 | --- | --- | --- | --- | --- |
 | Mermaid | `.mmd`, `.mermaid` | `diagram --lang mermaid` | `.png` or `.svg` | Flows and branching processes |
-| D2 | `.d2` | `diagram --lang d2` | `.png` or `.svg` | Bounded topology |
+| D2 | `.d2` | `diagram --lang d2` | `.svg` | Bounded topology without a managed-browser download |
 | Graphviz | `.dot`, `.gv` | `diagram --lang graphviz` | `.png` or `.svg` | Dense directed graphs |
 | Chart config | `.json` | `chart --config` | `.png` | Numeric trend or comparison |
 
@@ -21,3 +21,7 @@ tools/bin/render-diagram html --in INPUT.html --out OUTPUT.png --width 1440 --he
 
 That command is for the dedicated HTML-based specialist Skills, not a default
 structured-diagram output.
+
+D2 can expose a PNG mode, but it may try to fetch a D2-managed Chromium. This
+system does not download that browser implicitly: render D2 to SVG and inspect
+the SVG locally instead.

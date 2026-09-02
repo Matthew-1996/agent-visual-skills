@@ -21,13 +21,14 @@ Run exactly one matching local command:
 
 ```bash
 tools/bin/render-diagram diagram --lang mermaid --in INPUT.mmd --out OUTPUT.png
-tools/bin/render-diagram diagram --lang d2 --in INPUT.d2 --out OUTPUT.png
+tools/bin/render-diagram diagram --lang d2 --in INPUT.d2 --out OUTPUT.svg
 tools/bin/render-diagram diagram --lang graphviz --in INPUT.dot --out OUTPUT.png
 tools/bin/render-diagram chart --config INPUT.json --out OUTPUT.png
 ```
 
-Structured diagrams may use `.png` or `.svg`; Mermaid accepts `.mmd` or
-`.mermaid`, and Graphviz accepts `.dot` or `.gv`. Charts render `.png` only.
+Mermaid and Graphviz may use `.png` or `.svg`; D2 defaults to `.svg` so it does
+not request a D2-managed browser. Mermaid accepts `.mmd` or `.mermaid`, and
+Graphviz accepts `.dot` or `.gv`. Charts render `.png` only.
 Decode and inspect the output for labels, bounds, real relationships, and
 legibility before delivery. Do not install dependencies or use a hosted renderer to recover from failure.
 
