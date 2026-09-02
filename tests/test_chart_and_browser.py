@@ -1,8 +1,10 @@
 from pathlib import Path
 
 from PIL import Image
+import pytest
 
 from visual_renderer.browser import inspect_html, screenshot_html
+from visual_renderer import charts
 from visual_renderer.charts import render_chart
 from visual_renderer.cli import main
 
@@ -27,6 +29,49 @@ def test_browser_audit_reports_clean_mobile_fixture():
     assert audit.console_errors == []
     assert audit.page_errors == []
     assert audit.horizontal_overflow is False
+
+
+def test_browser_blocks_external_requests_and_rejects_screenshot(tmp_path):
+    """Catch a local HTML render that could fetch a remote script or stylesheet."""
+    source = FIXTURES / "browser-remote-request.html"
+    audit = inspect_html(source, (390, 844))
+
+    assert any("blocked external network request: https://example.invalid/blocked.js" in error for error in audit.console_errors)
+    with pytest.raises(RuntimeError, match="blocked external network request"):
+        screenshot_html(source, tmp_path / "remote.png", (390, 844))
+
+
+def test_screenshot_rejects_horizontal_overflow(tmp_path):
+    """Catch screenshot or CLI success for a page unusable at the requested mobile width."""
+    source = FIXTURES / "browser-overflow.html"
+    assert inspect_html(source, (390, 844)).horizontal_overflow is True
+    with pytest.raises(RuntimeError, match="horizontal overflow"):
+        screenshot_html(source, tmp_path / "overflow.png", (390, 844))
+
+    assert (
+        main(
+            [
+                "html",
+                "--in",
+                str(source),
+                "--out",
+                str(tmp_path / "overflow-cli.png"),
+                "--width",
+                "390",
+                "--height",
+                "844",
+            ]
+        )
+        == 1
+    )
+
+
+def test_chart_requires_an_approved_installed_cjk_font(monkeypatch, tmp_path):
+    """Catch silent matplotlib fallback when no approved Chinese font can be found."""
+    monkeypatch.setattr(charts, "_cjk_font", lambda: None)
+
+    with pytest.raises(RuntimeError, match="approved CJK font"):
+        render_chart(FIXTURES / "trend.json", tmp_path / "no-font.png")
 
 
 def test_cli_chart_and_html_subcommands_render_pngs(tmp_path):

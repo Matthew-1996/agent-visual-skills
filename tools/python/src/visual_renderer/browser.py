@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import urlsplit
 
-from playwright.sync_api import Browser, Page, sync_playwright
+from playwright.sync_api import Browser, Page, Route, sync_playwright
 
 from .common import validate_output_path, validate_png, validate_readable_input
 
@@ -34,11 +35,28 @@ def resolve_chrome() -> Path:
 def _load_page(page: Page, input_path: Path) -> tuple[list[str], list[str]]:
     console_errors: list[str] = []
     page_errors: list[str] = []
-    page.on("console", lambda message: console_errors.append(message.text) if message.type == "error" else None)
+
+    def route_local_only(route: Route) -> None:
+        url = route.request.url
+        if urlsplit(url).scheme.lower() in {"file", "data", "blob"}:
+            route.continue_()
+            return
+        console_errors.append(f"blocked external network request: {url}")
+        route.abort()
+
+    page.route("**/*", route_local_only)
+    page.on(
+        "console", lambda message: console_errors.append(message.text) if message.type == "error" else None
+    )
     page.on("pageerror", lambda error: page_errors.append(str(error)))
     page.goto(input_path.resolve().as_uri(), wait_until="load")
     page.evaluate("() => document.fonts.ready")
     return console_errors, page_errors
+
+
+def _audit(page: Page, console_errors: list[str], page_errors: list[str]) -> BrowserAudit:
+    overflow = page.evaluate("() => document.documentElement.scrollWidth > window.innerWidth")
+    return BrowserAudit(console_errors, page_errors, bool(overflow))
 
 
 def _with_page(input_path: Path, viewport: tuple[int, int], action):
@@ -61,11 +79,7 @@ def inspect_html(input_path: Path, viewport: tuple[int, int]) -> BrowserAudit:
     """Audit local HTML for browser errors and horizontal overflow at one viewport."""
     validate_readable_input(input_path, {".html", ".htm"})
 
-    def inspect(page: Page, console_errors: list[str], page_errors: list[str]) -> BrowserAudit:
-        overflow = page.evaluate("() => document.documentElement.scrollWidth > window.innerWidth")
-        return BrowserAudit(console_errors, page_errors, bool(overflow))
-
-    return _with_page(input_path, viewport, inspect)
+    return _with_page(input_path, viewport, _audit)
 
 
 def screenshot_html(input_path: Path, output_path: Path, viewport: tuple[int, int]) -> Path:
@@ -74,9 +88,12 @@ def screenshot_html(input_path: Path, output_path: Path, viewport: tuple[int, in
     validate_output_path(output_path, {".png"})
 
     def screenshot(page: Page, console_errors: list[str], page_errors: list[str]) -> Path:
-        if console_errors or page_errors:
-            details = "; ".join(console_errors + page_errors)
+        audit = _audit(page, console_errors, page_errors)
+        if audit.console_errors or audit.page_errors:
+            details = "; ".join(audit.console_errors + audit.page_errors)
             raise RuntimeError(f"HTML page emitted browser errors: {details}")
+        if audit.horizontal_overflow:
+            raise RuntimeError("HTML page has horizontal overflow at the requested viewport")
         page.screenshot(path=str(output_path))
         return validate_png(output_path, minimum_size=viewport)
 

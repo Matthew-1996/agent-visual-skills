@@ -63,8 +63,12 @@ def render_chart(config_path: Path, output_path: Path) -> Path:
     validate_output_path(output_path, {".png"})
 
     font = _cjk_font()
-    if font:
-        plt.rcParams["font.family"] = [font]
+    if font is None:
+        raise RuntimeError(
+            "no approved CJK font is installed; install PingFang SC, Hiragino Sans GB, "
+            "Microsoft YaHei, or Noto Sans CJK SC"
+        )
+    plt.rcParams["font.family"] = [font]
     plt.rcParams["axes.unicode_minus"] = False
 
     figure, axis = plt.subplots(figsize=(12, 6.75), dpi=100, layout="constrained")
