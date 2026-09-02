@@ -27,7 +27,7 @@ Every listed output was deleted before its public render command, then decoded w
 
 - Exact SHA match: True
 - Overlap: PASS; clipping: PASS; glyphs: PASS; arrows: PASS; balance: PASS
-- Observation: Original 1524x276 D2 SVG was rendered locally in Chrome for inspection; the return loop, edge labels, Chinese glyphs, spacing, and canvas bounds are clear.
+- Observation: Original 1473x274 D2 SVG was rendered locally in Chrome for inspection; request arrows run from user through Feishu and Hermes to Mac Codex, while distinct return arrows complete the round trip without label collisions.
 
 ### `test-results/acceptance-artifacts/architecture-desktop.png`
 
@@ -45,13 +45,13 @@ Every listed output was deleted before its public render command, then decoded w
 
 - Exact SHA match: True
 - Overlap: PASS; clipping: PASS; glyphs: PASS; arrows: PASS; balance: PASS
-- Observation: Chinese title, legend, months, and unit render without missing glyphs; points and axes are separated, unclipped, and proportioned to the data. No arrows apply.
+- Observation: The Chinese title, legend, and unit plus Jan-May labels render clearly; the exact 12, 18, 27, 25, 41 sequence is proportioned honestly with separated points and unclipped axes. No arrows apply.
 
 ### `test-results/acceptance-artifacts/graphviz.png`
 
 - Exact SHA match: True
 - Overlap: PASS; clipping: PASS; glyphs: PASS; arrows: PASS; balance: PASS
-- Observation: The wide linear dependency graph uses its panoramic canvas efficiently; every bilingual node and edge label is legible with distinct arrowheads and margins.
+- Observation: The 15-node dependency graph keeps Chinese labels legible, separates input, orchestration, Codex dependencies, validation, and audit, and routes 20 real dependencies with visible arrowheads and canvas margins.
 
 ### `test-results/acceptance-artifacts/excalidraw.png`
 
@@ -73,10 +73,9 @@ Every listed output was deleted before its public render command, then decoded w
 
 ## HTML/browser QA
 
-Both unique HTML inputs parsed with an HTML root and inline SVG, contained no remote URL, and were rendered/audited serially at 1440×1100 and 390×844.
-
-- Architecture: PASS; no console/page errors or mobile horizontal overflow.
-- Web visual: PASS; no console/page errors or mobile horizontal overflow; Governance interaction PASS (pressed state, visibility, and summary changed).
+- Architecture: result PASS; HTML root True; inline SVG True; remote references 0; console errors 0; page errors 0; overflow viewports none.
+- Web visual: result PASS; HTML root True; inline SVG True; remote references 0; console errors 0; page errors 0; overflow viewports none.
+- Web interaction: result PASS; aria-pressed True; execution hidden True; governance visible True; summary updated True.
 
 ## Chinese cross-renderer QA
 

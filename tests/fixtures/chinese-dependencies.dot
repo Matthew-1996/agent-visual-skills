@@ -1,19 +1,43 @@
-digraph chinese_dependencies {
+digraph agent_dependencies {
   rankdir=LR;
-  graph [pad="0.3", nodesep="0.45", ranksep="0.8"];
+  graph [pad="0.3", nodesep="0.4", ranksep="0.7"];
   node [shape=box, style="rounded,filled", fillcolor="#E8F0FE", color="#355C9A", fontname="PingFang SC"];
   edge [color="#607D9D", fontname="PingFang SC"];
 
-  source [label="本地来源"];
-  parser [label="解析器"];
-  policy [label="隐私检查"];
-  renderer [label="Graphviz 渲染"];
-  validator [label="输出验证"];
-  deliverable [label="可交付成果"];
+  user [label="用户请求"];
+  feishu [label="飞书入口"];
+  gateway [label="本地接入网关"];
+  hermes [label="阿里云 Hermes"];
+  orchestrator [label="任务编排器"];
+  policy [label="权限策略"];
+  memory [label="有边界记忆"];
+  skills [label="可复用技能"];
+  tools [label="本地工具"];
+  codex [label="Mac 本地 Codex"];
+  repo [label="代码仓库"];
+  tests [label="回归测试"];
+  renderer [label="可视化渲染器"];
+  artifact [label="验收产物"];
+  audit [label="审计记录"];
 
-  source -> parser [label="读取"];
-  parser -> policy [label="分类"];
-  policy -> renderer [label="允许本地"];
-  renderer -> validator [label="PNG / SVG"];
-  validator -> deliverable [label="通过"];
+  user -> feishu;
+  feishu -> gateway;
+  gateway -> hermes;
+  hermes -> orchestrator;
+  orchestrator -> policy;
+  policy -> codex;
+  orchestrator -> codex;
+  memory -> codex;
+  skills -> codex;
+  tools -> codex;
+  codex -> repo;
+  repo -> tests;
+  tests -> renderer;
+  renderer -> artifact;
+  artifact -> audit;
+  audit -> hermes;
+  codex -> hermes;
+  hermes -> gateway;
+  gateway -> feishu;
+  feishu -> user;
 }

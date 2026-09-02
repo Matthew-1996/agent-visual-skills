@@ -1,8 +1,8 @@
 {
-  "title": "2026 年上半年活跃用户趋势",
-  "labels": ["一月", "二月", "三月", "四月", "五月"],
-  "values": [120, 156, 148, 201, 245],
-  "series_label": "活跃用户",
-  "unit": "万人",
+  "title": "2026 年前五个月完成任务趋势",
+  "labels": ["Jan", "Feb", "Mar", "Apr", "May"],
+  "values": [12, 18, 27, 25, 41],
+  "series_label": "完成任务",
+  "unit": "项",
   "chart_type": "line"
 }

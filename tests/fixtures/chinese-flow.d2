@@ -1,7 +1,12 @@
 direction: right
-需求收集 -> 目标确认: 提交
-目标确认 -> 设计方案: 通过
-目标确认 -> 需求收集: 补充
-设计方案 -> 本地渲染
-本地渲染 -> 质量验证
-质量验证 -> 交付成果
+user: 用户
+feishu: 飞书
+hermes: 阿里云 Hermes
+codex: Mac 本地 Codex
+
+user -> feishu: 发送请求
+feishu -> hermes: 转交请求
+hermes -> codex: 调用代码任务
+codex -> hermes: 返回代码结果
+hermes -> feishu: 返回处理结果
+feishu -> user: 交付结果

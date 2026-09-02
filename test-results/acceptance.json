@@ -91,6 +91,41 @@
       "decoded_or_parsed_outputs": true,
       "failures": [],
       "regenerated_outputs": true,
+      "semantics": {
+        "components": {
+          "codex": "Mac 本地 Codex",
+          "feishu": "飞书",
+          "hermes": "阿里云 Hermes",
+          "user": "用户"
+        },
+        "edges": [
+          [
+            "user",
+            "feishu"
+          ],
+          [
+            "feishu",
+            "hermes"
+          ],
+          [
+            "hermes",
+            "codex"
+          ],
+          [
+            "codex",
+            "hermes"
+          ],
+          [
+            "hermes",
+            "feishu"
+          ],
+          [
+            "feishu",
+            "user"
+          ]
+        ],
+        "required_topology_present": true
+      },
       "source_contains_chinese": true,
       "visual_review": {
         "test-results/acceptance-artifacts/flow.svg": {
@@ -98,7 +133,7 @@
           "balance": "PASS",
           "clipping": "PASS",
           "glyphs": "PASS",
-          "notes": "Original 1524x276 D2 SVG was rendered locally in Chrome for inspection; the return loop, edge labels, Chinese glyphs, spacing, and canvas bounds are clear.",
+          "notes": "Original 1473x274 D2 SVG was rendered locally in Chrome for inspection; request arrows run from user through Feishu and Hermes to Mac Codex, while distinct return arrows complete the round trip without label collisions.",
           "overlap": "PASS",
           "result": "PASS",
           "sha256_matches": true
@@ -107,7 +142,7 @@
     },
     "result": "PASS",
     "sha256": {
-      "test-results/acceptance-artifacts/flow.svg": "b81aef8e011eee674274d8fd5d01f4b25b16dfffb1ae327371d66847a0aaa3de"
+      "test-results/acceptance-artifacts/flow.svg": "be4e1a6f6c56359fd4be98867b7e7d87a14e08af74c3587e2f17cae4d2462a23"
     }
   },
   {
@@ -239,6 +274,23 @@
       "decoded_or_parsed_outputs": true,
       "failures": [],
       "regenerated_outputs": true,
+      "semantics": {
+        "exact_data_present": true,
+        "labels": [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May"
+        ],
+        "values": [
+          12,
+          18,
+          27,
+          25,
+          41
+        ]
+      },
       "source_contains_chinese": true,
       "visual_review": {
         "test-results/acceptance-artifacts/trend.png": {
@@ -246,7 +298,7 @@
           "balance": "PASS",
           "clipping": "PASS",
           "glyphs": "PASS",
-          "notes": "Chinese title, legend, months, and unit render without missing glyphs; points and axes are separated, unclipped, and proportioned to the data. No arrows apply.",
+          "notes": "The Chinese title, legend, and unit plus Jan-May labels render clearly; the exact 12, 18, 27, 25, 41 sequence is proportioned honestly with separated points and unclipped axes. No arrows apply.",
           "overlap": "PASS",
           "result": "PASS",
           "sha256_matches": true
@@ -255,7 +307,7 @@
     },
     "result": "PASS",
     "sha256": {
-      "test-results/acceptance-artifacts/trend.png": "1742e297e402a4ea92f5526bc431196989f6f35056360a99ff87fef7651e3008"
+      "test-results/acceptance-artifacts/trend.png": "8db77eae6434871863afb6491c64695243b6a2632d1f064d51d5a549557f5ef4"
     }
   },
   {
@@ -284,8 +336,8 @@
     ],
     "dimensions": {
       "test-results/acceptance-artifacts/graphviz.png": {
-        "height": 109,
-        "width": 1359
+        "height": 582,
+        "width": 2191
       }
     },
     "exit_code": 0,
@@ -302,6 +354,11 @@
       "decoded_or_parsed_outputs": true,
       "failures": [],
       "regenerated_outputs": true,
+      "semantics": {
+        "all_nodes_have_chinese_labels": true,
+        "dependency_count": 20,
+        "node_count": 15
+      },
       "source_contains_chinese": true,
       "visual_review": {
         "test-results/acceptance-artifacts/graphviz.png": {
@@ -309,7 +366,7 @@
           "balance": "PASS",
           "clipping": "PASS",
           "glyphs": "PASS",
-          "notes": "The wide linear dependency graph uses its panoramic canvas efficiently; every bilingual node and edge label is legible with distinct arrowheads and margins.",
+          "notes": "The 15-node dependency graph keeps Chinese labels legible, separates input, orchestration, Codex dependencies, validation, and audit, and routes 20 real dependencies with visible arrowheads and canvas margins.",
           "overlap": "PASS",
           "result": "PASS",
           "sha256_matches": true
@@ -318,8 +375,8 @@
     },
     "result": "PASS",
     "sha256": {
-      "test-results/acceptance-artifacts/graphviz.png": "5576b6604815e7ebf1ff7d0ef856dd8023a5afe199a3bf1c4ac5fbd995b18114",
-      "test-results/acceptance-artifacts/graphviz.svg": "01fe9120e01a671392d141e8d3659e66b40eb7e4aed42f02c701da96f90ed4d7"
+      "test-results/acceptance-artifacts/graphviz.png": "51c822b9003b705402b515549ad7194da8741dba8f313e620277e1c20788c82e",
+      "test-results/acceptance-artifacts/graphviz.svg": "7599d976a44297e23c3cc4949e3e8f186927fa937c76889318fbffecbefbb315"
     }
   },
   {
@@ -405,8 +462,8 @@
         "width": 1173
       },
       "test-results/acceptance-artifacts/graphviz.png": {
-        "height": 109,
-        "width": 1359
+        "height": 582,
+        "width": 2191
       },
       "test-results/acceptance-artifacts/knowledge.png": {
         "height": 382,
@@ -509,7 +566,7 @@
           "balance": "PASS",
           "clipping": "PASS",
           "glyphs": "PASS",
-          "notes": "The wide linear dependency graph uses its panoramic canvas efficiently; every bilingual node and edge label is legible with distinct arrowheads and margins.",
+          "notes": "The 15-node dependency graph keeps Chinese labels legible, separates input, orchestration, Codex dependencies, validation, and audit, and routes 20 real dependencies with visible arrowheads and canvas margins.",
           "overlap": "PASS",
           "result": "PASS",
           "sha256_matches": true
@@ -529,7 +586,7 @@
           "balance": "PASS",
           "clipping": "PASS",
           "glyphs": "PASS",
-          "notes": "Chinese title, legend, months, and unit render without missing glyphs; points and axes are separated, unclipped, and proportioned to the data. No arrows apply.",
+          "notes": "The Chinese title, legend, and unit plus Jan-May labels render clearly; the exact 12, 18, 27, 25, 41 sequence is proportioned honestly with separated points and unclipped axes. No arrows apply.",
           "overlap": "PASS",
           "result": "PASS",
           "sha256_matches": true
@@ -540,10 +597,10 @@
     "sha256": {
       "test-results/acceptance-artifacts/architecture-desktop.png": "ae726396f008ea8e5c24ac192fc558a1151d03dfe9667e8d641a4e229610e816",
       "test-results/acceptance-artifacts/excalidraw.png": "64b938814ee3763a2db583c40136abb7cba0ca9779458ccf062d513e3bb3f5e3",
-      "test-results/acceptance-artifacts/flow.svg": "b81aef8e011eee674274d8fd5d01f4b25b16dfffb1ae327371d66847a0aaa3de",
-      "test-results/acceptance-artifacts/graphviz.png": "5576b6604815e7ebf1ff7d0ef856dd8023a5afe199a3bf1c4ac5fbd995b18114",
+      "test-results/acceptance-artifacts/flow.svg": "be4e1a6f6c56359fd4be98867b7e7d87a14e08af74c3587e2f17cae4d2462a23",
+      "test-results/acceptance-artifacts/graphviz.png": "51c822b9003b705402b515549ad7194da8741dba8f313e620277e1c20788c82e",
       "test-results/acceptance-artifacts/knowledge.png": "07497ea997bce1282c6d578dc7992f1196a201f243f3b1d0f92d132563b3d384",
-      "test-results/acceptance-artifacts/trend.png": "1742e297e402a4ea92f5526bc431196989f6f35056360a99ff87fef7651e3008"
+      "test-results/acceptance-artifacts/trend.png": "8db77eae6434871863afb6491c64695243b6a2632d1f064d51d5a549557f5ef4"
     }
   },
   {

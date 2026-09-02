@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict
 from html.parser import HTMLParser
 import hashlib
 import json
@@ -12,12 +11,13 @@ import re
 import shlex
 import subprocess
 from typing import Any
+from urllib.parse import urlsplit
 from xml.etree import ElementTree
 
 from PIL import Image
 from playwright.sync_api import sync_playwright
 
-from visual_renderer.browser import inspect_html, resolve_chrome
+from visual_renderer.browser import resolve_chrome
 from visual_renderer.excalidraw import audit_scene, fix_scene_layout
 
 
@@ -35,6 +35,32 @@ CJK_PATTERN = re.compile(r"[\u3400-\u9fff]")
 REMOTE_PATTERN = re.compile(
     r"https?://|(?:src|href)\s*=\s*[\"']\s*//", re.IGNORECASE
 )
+D2_NODE_PATTERN = re.compile(r"^\s*([A-Za-z_][A-Za-z0-9_-]*)\s*:\s*(.+?)\s*$")
+D2_EDGE_PATTERN = re.compile(
+    r"^\s*([A-Za-z_][A-Za-z0-9_-]*)\s*->\s*([A-Za-z_][A-Za-z0-9_-]*)\s*:\s*(.+?)\s*$"
+)
+DOT_NODE_PATTERN = re.compile(
+    r'^\s*([A-Za-z_][A-Za-z0-9_]*)\s+\[label="([^"]+)"[^]]*\];\s*$'
+)
+DOT_EDGE_PATTERN = re.compile(
+    r"^\s*([A-Za-z_][A-Za-z0-9_]*)\s*->\s*([A-Za-z_][A-Za-z0-9_]*)"
+)
+REQUIRED_FLOW_COMPONENTS = {
+    "codex": "Mac 本地 Codex",
+    "feishu": "飞书",
+    "hermes": "阿里云 Hermes",
+    "user": "用户",
+}
+REQUIRED_FLOW_EDGES = [
+    ["user", "feishu"],
+    ["feishu", "hermes"],
+    ["hermes", "codex"],
+    ["codex", "hermes"],
+    ["hermes", "feishu"],
+    ["feishu", "user"],
+]
+EXPECTED_TREND_LABELS = ["Jan", "Feb", "Mar", "Apr", "May"]
+EXPECTED_TREND_VALUES = [12, 18, 27, 25, 41]
 
 
 class _HTMLFacts(HTMLParser):
@@ -155,30 +181,72 @@ def html_source_is_valid(facts: dict[str, Any]) -> bool:
     )
 
 
-def browser_audits(path: Path) -> tuple[list[dict[str, Any]], list[str]]:
-    records: list[dict[str, Any]] = []
-    failures: list[str] = []
-    for viewport in ((1440, 1100), (390, 844)):
-        label = f"{viewport[0]}x{viewport[1]}"
-        try:
-            audit = inspect_html(path, viewport)
-            record = {"viewport": label, **asdict(audit)}
-            if audit.console_errors or audit.page_errors or audit.horizontal_overflow:
-                failures.append(f"{relative(path)} browser audit failed at {label}")
-        except Exception as exc:  # browser failures must still reach the report
-            record = {
-                "viewport": label,
-                "console_errors": [],
-                "page_errors": [str(exc)],
-                "horizontal_overflow": True,
-            }
-            failures.append(f"{relative(path)} browser audit raised at {label}: {exc}")
-        records.append(record)
-    return records, failures
+def inspect_flow_semantics(path: Path) -> dict[str, Any]:
+    components: dict[str, str] = {}
+    edges: list[list[str]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        edge_match = D2_EDGE_PATTERN.match(line)
+        if edge_match:
+            edges.append([edge_match.group(1), edge_match.group(2)])
+            continue
+        node_match = D2_NODE_PATTERN.match(line)
+        if node_match and node_match.group(1) != "direction":
+            components[node_match.group(1)] = node_match.group(2)
+    return {
+        "components": components,
+        "edges": edges,
+        "required_topology_present": components == REQUIRED_FLOW_COMPONENTS
+        and edges == REQUIRED_FLOW_EDGES,
+    }
 
 
-def inspect_web_interaction(path: Path) -> dict[str, Any]:
-    result: dict[str, Any] = {
+def inspect_graphviz_semantics(path: Path) -> dict[str, Any]:
+    labels: dict[str, str] = {}
+    dependencies: list[list[str]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        node_match = DOT_NODE_PATTERN.match(line)
+        if node_match:
+            labels[node_match.group(1)] = node_match.group(2)
+            continue
+        edge_match = DOT_EDGE_PATTERN.match(line)
+        if edge_match:
+            dependencies.append([edge_match.group(1), edge_match.group(2)])
+    return {
+        "node_count": len(labels),
+        "dependency_count": len(dependencies),
+        "all_nodes_have_chinese_labels": bool(labels)
+        and all(CJK_PATTERN.search(label) for label in labels.values()),
+    }
+
+
+def inspect_trend_semantics(path: Path) -> dict[str, Any]:
+    config = json.loads(path.read_text(encoding="utf-8"))
+    labels = config.get("labels")
+    values = config.get("values")
+    return {
+        "labels": labels,
+        "values": values,
+        "exact_data_present": labels == EXPECTED_TREND_LABELS
+        and values == EXPECTED_TREND_VALUES,
+    }
+
+
+def collect_browser_evidence(
+    architecture_path: Path, web_path: Path
+) -> tuple[
+    list[dict[str, Any]],
+    list[str],
+    list[dict[str, Any]],
+    list[str],
+    dict[str, Any],
+]:
+    """Audit both HTML inputs and the interaction in one sequential browser."""
+    audit_records: dict[str, list[dict[str, Any]]] = {
+        "architecture": [],
+        "web-visual": [],
+    }
+    failures: dict[str, list[str]] = {"architecture": [], "web-visual": []}
+    interaction: dict[str, Any] = {
         "control": "治理视角",
         "aria_pressed": False,
         "execution_hidden": False,
@@ -193,29 +261,107 @@ def inspect_web_interaction(path: Path) -> dict[str, Any]:
                 executable_path=str(resolve_chrome()), headless=True
             )
             try:
-                page = browser.new_page(viewport={"width": 390, "height": 844})
-                page.goto(path.resolve().as_uri(), wait_until="load", timeout=COMMAND_TIMEOUT_SECONDS * 1000)
-                button = page.get_by_role("button", name="治理视角")
-                button.click()
-                result["aria_pressed"] = button.get_attribute("aria-pressed") == "true"
-                result["execution_hidden"] = page.locator('[data-layer="execution"]').is_hidden()
-                result["governance_visible"] = page.locator('[data-layer="governance"]').is_visible()
-                result["summary_updated"] = "边界" in page.locator("[data-lens-summary]").inner_text()
-                if all(
-                    result[key]
-                    for key in (
-                        "aria_pressed",
-                        "execution_hidden",
-                        "governance_visible",
-                        "summary_updated",
-                    )
+                for name, path in (
+                    ("architecture", architecture_path),
+                    ("web-visual", web_path),
                 ):
-                    result["result"] = "PASS"
+                    for viewport in ((1440, 1100), (390, 844)):
+                        label = f"{viewport[0]}x{viewport[1]}"
+                        console_errors: list[str] = []
+                        page_errors: list[str] = []
+                        overflow = True
+                        page = browser.new_page(
+                            viewport={"width": viewport[0], "height": viewport[1]}
+                        )
+                        page.set_default_timeout(10_000)
+
+                        def route_local_only(route) -> None:
+                            url = route.request.url
+                            if urlsplit(url).scheme.lower() in {"file", "data", "blob"}:
+                                route.continue_()
+                                return
+                            console_errors.append(
+                                f"blocked external network request: {url}"
+                            )
+                            route.abort()
+
+                        page.route("**/*", route_local_only)
+                        page.on(
+                            "console",
+                            lambda message: console_errors.append(message.text)
+                            if message.type == "error"
+                            else None,
+                        )
+                        page.on("pageerror", lambda error: page_errors.append(str(error)))
+                        try:
+                            page.goto(
+                                path.resolve().as_uri(),
+                                wait_until="load",
+                                timeout=COMMAND_TIMEOUT_SECONDS * 1000,
+                            )
+                            page.evaluate("() => document.fonts.ready")
+                            if name == "web-visual" and viewport == (390, 844):
+                                button = page.get_by_role("button", name="治理视角")
+                                button.click()
+                                interaction["aria_pressed"] = (
+                                    button.get_attribute("aria-pressed") == "true"
+                                )
+                                interaction["execution_hidden"] = page.locator(
+                                    '[data-layer="execution"]'
+                                ).is_hidden()
+                                interaction["governance_visible"] = page.locator(
+                                    '[data-layer="governance"]'
+                                ).is_visible()
+                                interaction["summary_updated"] = "边界" in page.locator(
+                                    "[data-lens-summary]"
+                                ).inner_text()
+                                if all(
+                                    interaction[key]
+                                    for key in (
+                                        "aria_pressed",
+                                        "execution_hidden",
+                                        "governance_visible",
+                                        "summary_updated",
+                                    )
+                                ):
+                                    interaction["result"] = "PASS"
+                            overflow = bool(
+                                page.evaluate(
+                                    "() => document.documentElement.scrollWidth > window.innerWidth"
+                                )
+                            )
+                        except Exception as exc:
+                            page_errors.append(str(exc))
+                        finally:
+                            page.close()
+                        record = {
+                            "viewport": label,
+                            "console_errors": console_errors,
+                            "page_errors": page_errors,
+                            "horizontal_overflow": overflow,
+                        }
+                        audit_records[name].append(record)
+                        if console_errors or page_errors or overflow:
+                            failures[name].append(
+                                f"{relative(path)} browser audit failed at {label}"
+                            )
             finally:
                 browser.close()
-    except Exception as exc:  # interaction failures must be serialised, not hidden
-        result["error"] = str(exc)
-    return result
+    except Exception as exc:
+        interaction["error"] = str(exc)
+        for name, path in (("architecture", architecture_path), ("web-visual", web_path)):
+            failures[name].append(f"{relative(path)} browser session failed: {exc}")
+    if interaction["result"] != "PASS":
+        failures["web-visual"].append(
+            "web visual interaction did not change all required state"
+        )
+    return (
+        audit_records["architecture"],
+        failures["architecture"],
+        audit_records["web-visual"],
+        failures["web-visual"],
+        interaction,
+    )
 
 
 def read_visual_review() -> dict[str, Any]:
@@ -348,14 +494,30 @@ def render_report(rows: list[dict[str, Any]]) -> str:
 
     architecture = next(row for row in rows if row["name"] == "architecture")
     web = next(row for row in rows if row["name"] == "web-visual")
+    lines.extend(["## HTML/browser QA", ""])
+    for label, row in (("Architecture", architecture), ("Web visual", web)):
+        facts = row["qa"].get("html", {})
+        audits = row["browser_audit"]
+        console_count = sum(len(audit["console_errors"]) for audit in audits)
+        page_error_count = sum(len(audit["page_errors"]) for audit in audits)
+        overflow_viewports = [
+            audit["viewport"] for audit in audits if audit["horizontal_overflow"]
+        ]
+        lines.append(
+            f"- {label}: result {row['result']}; HTML root {facts.get('html_root', False)}; "
+            f"inline SVG {facts.get('inline_svg', False)}; remote references "
+            f"{facts.get('remote_reference_count', 'unknown')}; console errors {console_count}; "
+            f"page errors {page_error_count}; overflow viewports "
+            f"{', '.join(overflow_viewports) if overflow_viewports else 'none'}."
+        )
+    interaction = web["qa"].get("interaction", {})
     lines.extend(
         [
-            "## HTML/browser QA",
-            "",
-            "Both unique HTML inputs parsed with an HTML root and inline SVG, contained no remote URL, and were rendered/audited serially at 1440×1100 and 390×844.",
-            "",
-            f"- Architecture: {architecture['result']}; no console/page errors or mobile horizontal overflow.",
-            f"- Web visual: {web['result']}; no console/page errors or mobile horizontal overflow; Governance interaction {web['qa']['interaction']['result']} (pressed state, visibility, and summary changed).",
+            f"- Web interaction: result {interaction.get('result', 'FAIL')}; aria-pressed "
+            f"{interaction.get('aria_pressed', False)}; execution hidden "
+            f"{interaction.get('execution_hidden', False)}; governance visible "
+            f"{interaction.get('governance_visible', False)}; summary updated "
+            f"{interaction.get('summary_updated', False)}.",
             "",
             "## Chinese cross-renderer QA",
             "",
@@ -433,13 +595,21 @@ def main() -> int:
     ]
 
     evidence = {key: inspect_artifact(path) for key, path in paths.items()}
+    flow_semantics = inspect_flow_semantics(FIXTURES / "chinese-flow.d2")
+    graphviz_semantics = inspect_graphviz_semantics(FIXTURES / "chinese-dependencies.dot")
+    trend_semantics = inspect_trend_semantics(FIXTURES / "trend.json")
     architecture_source = inspect_html_source(FIXTURES / "personal-agent-architecture.html")
     web_source = inspect_html_source(FIXTURES / "my-agent-stack.html")
-    architecture_audits, architecture_failures = browser_audits(FIXTURES / "personal-agent-architecture.html")
-    web_audits, web_failures = browser_audits(FIXTURES / "my-agent-stack.html")
-    interaction = inspect_web_interaction(FIXTURES / "my-agent-stack.html")
-    if interaction["result"] != "PASS":
-        web_failures.append("web visual interaction did not change all required state")
+    (
+        architecture_audits,
+        architecture_failures,
+        web_audits,
+        web_failures,
+        interaction,
+    ) = collect_browser_evidence(
+        FIXTURES / "personal-agent-architecture.html",
+        FIXTURES / "my-agent-stack.html",
+    )
 
     rows: list[dict[str, Any]] = []
     rows.append(build_row(
@@ -456,11 +626,13 @@ def main() -> int:
         reviews,
         qa_extra={
             "source_contains_chinese": bool(CJK_PATTERN.search((FIXTURES / "chinese-flow.d2").read_text(encoding="utf-8"))),
+            "semantics": flow_semantics,
             "visual_review": {
                 evidence["flow_svg"]["path"]: matched_review(evidence["flow_svg"], reviews)
             },
         },
-        failures=[] if matched_review(evidence["flow_svg"], reviews)["result"] == "PASS" else ["D2 SVG original-resolution review is missing or failed"],
+        failures=([] if matched_review(evidence["flow_svg"], reviews)["result"] == "PASS" else ["D2 SVG original-resolution review is missing or failed"])
+        + ([] if flow_semantics["required_topology_present"] else ["required user/Feishu/Hermes/Codex round-trip topology is missing"]),
     ))
     rows.append(build_row(
         "architecture",
@@ -476,14 +648,25 @@ def main() -> int:
         commands["trend"],
         [evidence["trend"]],
         reviews,
-        qa_extra={"source_contains_chinese": bool(CJK_PATTERN.search((FIXTURES / "trend.json").read_text(encoding="utf-8")))},
+        qa_extra={
+            "source_contains_chinese": bool(CJK_PATTERN.search((FIXTURES / "trend.json").read_text(encoding="utf-8"))),
+            "semantics": trend_semantics,
+        },
+        failures=[] if trend_semantics["exact_data_present"] else ["trend labels or values differ from the required dataset"],
     ))
     rows.append(build_row(
         "graphviz",
         commands["graphviz"],
         [evidence["graphviz_svg"], evidence["graphviz_png"]],
         reviews,
-        qa_extra={"source_contains_chinese": bool(CJK_PATTERN.search((FIXTURES / "chinese-dependencies.dot").read_text(encoding="utf-8")))},
+        qa_extra={
+            "source_contains_chinese": bool(CJK_PATTERN.search((FIXTURES / "chinese-dependencies.dot").read_text(encoding="utf-8"))),
+            "semantics": graphviz_semantics,
+        },
+        failures=[] if 14 <= graphviz_semantics["node_count"] <= 16
+        and graphviz_semantics["dependency_count"] >= 15
+        and graphviz_semantics["all_nodes_have_chinese_labels"]
+        else ["Graphviz fixture is not a 14-16 node Chinese dependency graph"],
     ))
 
     chinese_outputs = [

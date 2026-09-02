@@ -32,18 +32,18 @@
       "balance": "PASS",
       "clipping": "PASS",
       "glyphs": "PASS",
-      "notes": "Original 1524x276 D2 SVG was rendered locally in Chrome for inspection; the return loop, edge labels, Chinese glyphs, spacing, and canvas bounds are clear.",
+      "notes": "Original 1473x274 D2 SVG was rendered locally in Chrome for inspection; request arrows run from user through Feishu and Hermes to Mac Codex, while distinct return arrows complete the round trip without label collisions.",
       "overlap": "PASS",
-      "sha256": "b81aef8e011eee674274d8fd5d01f4b25b16dfffb1ae327371d66847a0aaa3de"
+      "sha256": "be4e1a6f6c56359fd4be98867b7e7d87a14e08af74c3587e2f17cae4d2462a23"
     },
     "test-results/acceptance-artifacts/graphviz.png": {
       "arrows": "PASS",
       "balance": "PASS",
       "clipping": "PASS",
       "glyphs": "PASS",
-      "notes": "The wide linear dependency graph uses its panoramic canvas efficiently; every bilingual node and edge label is legible with distinct arrowheads and margins.",
+      "notes": "The 15-node dependency graph keeps Chinese labels legible, separates input, orchestration, Codex dependencies, validation, and audit, and routes 20 real dependencies with visible arrowheads and canvas margins.",
       "overlap": "PASS",
-      "sha256": "5576b6604815e7ebf1ff7d0ef856dd8023a5afe199a3bf1c4ac5fbd995b18114"
+      "sha256": "51c822b9003b705402b515549ad7194da8741dba8f313e620277e1c20788c82e"
     },
     "test-results/acceptance-artifacts/knowledge.png": {
       "arrows": "PASS",
@@ -59,9 +59,9 @@
       "balance": "PASS",
       "clipping": "PASS",
       "glyphs": "PASS",
-      "notes": "Chinese title, legend, months, and unit render without missing glyphs; points and axes are separated, unclipped, and proportioned to the data. No arrows apply.",
+      "notes": "The Chinese title, legend, and unit plus Jan-May labels render clearly; the exact 12, 18, 27, 25, 41 sequence is proportioned honestly with separated points and unclipped axes. No arrows apply.",
       "overlap": "PASS",
-      "sha256": "1742e297e402a4ea92f5526bc431196989f6f35056360a99ff87fef7651e3008"
+      "sha256": "8db77eae6434871863afb6491c64695243b6a2632d1f064d51d5a549557f5ef4"
     },
     "test-results/acceptance-artifacts/web-visual-desktop.png": {
       "arrows": "PASS",
