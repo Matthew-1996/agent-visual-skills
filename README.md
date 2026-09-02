@@ -59,6 +59,18 @@ Use the lowest sufficient level:
 
 The normative selection, privacy, and visual-quality rules live in `shared/` so other Agents can reuse them without Codex-specific metadata.
 
+## Editorial visual profile
+
+`editorial-v1` is the global default profile for HTML visuals. It uses a
+restrained paper-and-ink treatment, semantic tokens, local system fonts, inline
+generic icons, and a nine-node / twelve-connector default complexity budget.
+`legacy-dark` remains available only when explicitly requested. Each material
+style change is versioned (`editorial-v1.1`, `editorial-v1.2`, and so on):
+record the candidate source and adaptation decision in
+`shared/inspiration-registry.md`, obtain approval, update the profile and one
+golden example, then validate it locally. Default delivery remains one
+self-contained desktop HTML; mobile, SVG, and PNG are opt-in requests.
+
 ## Local-first privacy boundary
 
 Every request is classified as `PUBLIC`, `PRIVATE`, `WORK`, or `UNKNOWN`; uncertainty is `UNKNOWN`. `PRIVATE`, `WORK`, and `UNKNOWN` content is Local-only and must never be sent to a hosted renderer. Even `PUBLIC` content requires explicit per-request authorization before any future hosted fallback is used. The current implementation has no hosted execution path.
@@ -99,6 +111,11 @@ Read `hermes/MIGRATION.md` before moving the repository to Ubuntu. It classifies
 
 - The architecture pattern is authored by Cocoon AI and adopted/distributed through `NousResearch/hermes-agent`. Their independent MIT notices are preserved in `LICENSES/CocoonAI-architecture-diagram-generator-MIT.txt` and `LICENSES/NousResearch-hermes-agent-MIT.txt`; they are not merged.
 - The infographic layout x style idea is inspired by Jim Liu's MIT-licensed `baoyu-infographic`; the notice is preserved in `LICENSES/JimLiu-baoyu-skills-MIT.txt`.
+- The Editorial V1 palette, restrained composition, semantic-token approach,
+  connector discipline, and icon grammar are adapted from Cathryn Lavery's
+  MIT-licensed `diagram-design` v2.6; its notice is preserved in
+  `LICENSES/CathrynLavery-diagram-design-MIT.txt`. Remote Google Fonts and the
+  upstream onboarding gate are intentionally not adopted.
 - The Excalidraw workflow is a clean-room implementation. `coleam00/excalidraw-diagram-skill` informed format selection, but its repository license was not confirmed, so no code or substantial instructional text was copied.
 - npm package versions are pinned in `tools/node/package.json`; Python dependencies are pinned by interpreter range in `tools/python/pyproject.toml`.
 

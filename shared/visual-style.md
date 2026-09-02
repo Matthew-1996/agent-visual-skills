@@ -1,5 +1,11 @@
 # Visual style contract
 
+## Active profile
+
+`editorial-v1` in `shared/style-profiles/editorial-v1.md` is the global default.
+Read it with `shared/iconography.md` before generating HTML.
+`legacy-dark` in `shared/style-profiles/legacy-dark.md` remains opt-in only.
+
 ## Typography and language
 
 Prefer 中文 output and Chinese system fonts in this order: `PingFang SC`, `Hiragino Sans GB`, `Microsoft YaHei`, `Noto Sans CJK SC`, `sans-serif`. Verify glyphs render without boxes and text stays inside its bounds. Preserve the source language; Chinese labels should remain concise.

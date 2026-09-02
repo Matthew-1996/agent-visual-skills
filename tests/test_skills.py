@@ -98,3 +98,14 @@ def test_router_defaults_to_one_desktop_html_and_defers_other_exports():
         assert "SVG" in text
         assert "PNG" in text
         assert "explicitly" in text
+
+
+def test_editorial_profile_is_read_before_html_generation():
+    profile = "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/style-profiles/editorial-v1.md"
+    iconography = "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/iconography.md"
+
+    for name in ("architecture-diagram", "infographic", "web-visual"):
+        skill = Path("codex/skills") / name / "SKILL.md"
+        text = skill.read_text(encoding="utf-8")
+        assert profile in text
+        assert iconography in text
