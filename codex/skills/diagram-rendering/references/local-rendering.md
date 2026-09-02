@@ -22,6 +22,6 @@ tools/bin/render-diagram html --in INPUT.html --out OUTPUT.png --width 1440 --he
 That command is for the dedicated HTML-based specialist Skills, not a default
 structured-diagram output.
 
-D2 can expose a PNG mode, but it may try to fetch a D2-managed Chromium. This
-system does not download that browser implicitly: render D2 to SVG and inspect
-the SVG locally instead.
+D2 can expose a PNG mode, but it may try to fetch a D2-managed Chromium. The
+public CLI therefore rejects D2 `.png` before launching `d2`; render to SVG and
+inspect the SVG locally instead.

@@ -3,7 +3,7 @@ name: architecture-diagram
 description: 生成可离线打开的单文件架构图 HTML。适用于系统、云、数据流、安全边界与技术拓扑图。
 license: MIT
 metadata:
-  author: Nous Research / Cocoon AI; adapted for Codex
+  author: Cocoon AI; ported via NousResearch/hermes-agent; adapted for Codex
 ---
 
 # 离线架构图

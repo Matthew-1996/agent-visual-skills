@@ -123,7 +123,7 @@ Kroki 和 QuickChart 不进入默认执行路径。可在文档中作为未来�
 
 ### 6.3 architecture-diagram
 
-采用单文件 HTML + inline SVG。基于 MIT 许可的 Hermes/Cocoon AI 方案进行 Codex 适配并保留许可证和 attribution。移除 Google Fonts 等网络依赖，使用 macOS/Linux 系统字体 fallback。箭头在节点后层，组件、边界和图例按最小间距规则布局；可通过本地 Chrome 截图为 PNG。
+采用单文件 HTML + inline SVG。基于 Cocoon AI 原著、经 NousResearch/hermes-agent 采用与分发的 MIT 方案进行 Codex 适配，分别保留两个来源各自独立的许可证和 attribution。移除 Google Fonts 等网络依赖，使用 macOS/Linux 系统字体 fallback。箭头在节点后层，组件、边界和图例按最小间距规则布局；可通过本地 Chrome 截图为 PNG。
 
 ### 6.4 infographic
 

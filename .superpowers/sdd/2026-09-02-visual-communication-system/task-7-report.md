@@ -5,8 +5,10 @@
 - `codex/skills/architecture-diagram/SKILL.md`: concise Codex guidance for
   local-only, responsive SVG architecture diagrams.
 - `assets/template.html`: system-font, single-file starting template.
-- `ATTRIBUTION.md` and `LICENSES/NousResearch-hermes-agent-MIT.txt`: preserved
-  Nous Research / Cocoon AI attribution and MIT notice.
+- `ATTRIBUTION.md`, `LICENSES/CocoonAI-architecture-diagram-generator-MIT.txt`,
+  and `LICENSES/NousResearch-hermes-agent-MIT.txt`: record Cocoon AI as the
+  pattern author and NousResearch/hermes-agent as the adopting/distributing
+  source, with their independent MIT notices preserved separately.
 - `tests/fixtures/personal-agent-architecture.html`: Chinese architecture of
   Mac Codex, GitHub, 阿里云 Hermes, and 飞书. It contains inline CSS/SVG only,
   opaque node masks over arrows, a cloud boundary, and a legend outside it.

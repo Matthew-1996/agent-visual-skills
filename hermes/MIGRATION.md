@@ -49,6 +49,8 @@ Hermes integration mechanisms. Re-express only the portable behavior.
 | `infographic/assets/template.html` | B | Keep the template; replace Mac-specific font availability through CSS fallback. |
 | `web-visual/assets/template.html` | B | Keep the template; replace Mac-specific font availability through CSS fallback. |
 | `architecture-diagram/ATTRIBUTION.md`, `excalidraw-diagram/ATTRIBUTION.md`, `infographic/ATTRIBUTION.md` | A | Copy unchanged with the referenced third-party notices. |
+| `LICENSES/CocoonAI-architecture-diagram-generator-MIT.txt` | A | Copy the original Cocoon AI pattern notice unchanged. |
+| `LICENSES/NousResearch-hermes-agent-MIT.txt` | A | Copy the independent NousResearch/hermes-agent distribution notice unchanged. |
 | `codex/skills/visual-communication` | B | Preserve routing rules in Hermes's local instruction format. |
 | `codex/skills/excalidraw-diagram` | B | Preserve the workflow, invoking local files and renderer commands directly. |
 | `codex/skills/diagram-rendering` | B | Call `tools/bin/render-diagram` directly; retain editable source. |
@@ -58,7 +60,7 @@ Hermes integration mechanisms. Re-express only the portable behavior.
 | `tools/bin/render-diagram` | B | Keep the CLI contract, adapting its browser-dependent runtime path for Chromium. |
 | Mermaid CLI (`mmdc`) | D | Install repository-local npm dependencies under `tools/node`. |
 | Graphviz (`dot`) | D | Install with Ubuntu packages. |
-| D2 (`d2`) | D | Install the official Linux binary into a system PATH location. |
+| D2 (`d2`) | D | Install the official Linux binary into a system PATH location; the public CLI remains SVG-only and rejects PNG before invoking it. |
 | Python chart renderer (matplotlib/Pillow) | D | Synchronize the repository-local uv environment. |
 | Excalidraw export bridge | D | Install repository-local npm dependencies and use Chromium. |
 | Playwright Python package | D | Synchronize the Python environment; do not download its bundled browser. |
@@ -120,6 +122,9 @@ d2 version
 dot -V
 tools/bin/render-diagram --help
 ```
+
+Use D2 SVG output on Hermes. The public CLI rejects D2 PNG before starting the
+renderer, so the no-network boundary does not depend on D2's browser behavior.
 
 The Mac bootstrap may reuse Google Chrome at
 `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`. That behavior

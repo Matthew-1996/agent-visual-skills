@@ -26,9 +26,10 @@ tools/bin/render-diagram diagram --lang graphviz --in INPUT.dot --out OUTPUT.png
 tools/bin/render-diagram chart --config INPUT.json --out OUTPUT.png
 ```
 
-Mermaid and Graphviz may use `.png` or `.svg`; D2 defaults to `.svg` so it does
-not request a D2-managed browser. Mermaid accepts `.mmd` or `.mermaid`, and
-Graphviz accepts `.dot` or `.gv`. Charts render `.png` only.
+Mermaid and Graphviz may use `.png` or `.svg`; D2 accepts `.svg` only. The public
+CLI rejects a D2 `.png` request before launching `d2`, preventing a managed-
+browser download. Mermaid accepts `.mmd` or `.mermaid`, and Graphviz accepts
+`.dot` or `.gv`. Charts render `.png` only.
 Decode and inspect the output for labels, bounds, real relationships, and
 legibility before delivery. Do not install dependencies or use a hosted renderer to recover from failure.
 

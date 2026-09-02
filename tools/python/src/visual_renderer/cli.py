@@ -50,6 +50,10 @@ def _validate_arguments(args: argparse.Namespace) -> None:
     if args.command == "diagram":
         suffixes = {"mermaid": {".mmd", ".mermaid"}, "d2": {".d2"}, "graphviz": {".dot", ".gv"}}
         validate_readable_input(Path(args.input_path), suffixes[args.lang])
+        if args.lang == "d2" and output_path.suffix.lower() != ".svg":
+            raise ValueError(
+                "D2 output is SVG only; PNG can trigger an unmanaged browser download and is disabled"
+            )
     elif args.command == "chart":
         validate_readable_input(Path(args.config), {".json"})
     elif args.command == "html":

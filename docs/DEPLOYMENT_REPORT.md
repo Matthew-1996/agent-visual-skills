@@ -13,7 +13,7 @@ Date: 2026-09-02
 | `visual-communication` | Local clean implementation | Worktree verified; canonical link pending | Select the lowest-cost sufficient representation under the privacy policy. |
 | `excalidraw-diagram` | Local clean-room implementation; Excalidraw format/API attribution retained | Worktree verified; canonical link pending | Produce editable whiteboard diagrams with static and visual QA. |
 | `diagram-rendering` | Local clean implementation | Worktree verified; canonical link pending | Render Mermaid, D2, Graphviz, and matplotlib locally. |
-| `architecture-diagram` | Adapted from MIT-licensed Nous Research/Cocoon AI pattern | Worktree verified; canonical link pending | Produce offline responsive architecture HTML/SVG/PNG. |
+| `architecture-diagram` | Cocoon AI pattern, adopted/distributed via NousResearch/hermes-agent; independent MIT notices retained | Worktree verified; canonical link pending | Produce offline responsive architecture HTML/SVG/PNG. |
 | `infographic` | Local implementation inspired by MIT-licensed Jim Liu layout x style idea | Worktree verified; canonical link pending | Produce self-contained summary visuals. |
 | `web-visual` | Local clean implementation | Worktree verified; canonical link pending | Produce responsive, optionally interactive single-file reports. |
 
@@ -47,7 +47,7 @@ Paths below are repository-relative and must be regenerated from the canonical c
 | Web Visual desktop/mobile and interaction | PASS | `test-results/acceptance-artifacts/web-visual-{desktop,mobile}.png` |
 | Excalidraw bad -> fixed QA | PASS | `test-results/acceptance-artifacts/excalidraw.png` |
 
-Worktree evidence at this draft point: **8/8 acceptance rows PASS; 53/53 automated tests PASS**. Controller must replace this sentence with fresh canonical evidence, including the canonical commit and final clean-status result.
+Worktree evidence at this draft point: **8/8 acceptance rows PASS; 54/54 automated tests PASS**. Controller must replace this sentence with fresh canonical evidence, including the canonical commit and final clean-status result.
 
 ## Created Files
 
@@ -62,9 +62,9 @@ Worktree evidence at this draft point: **8/8 acceptance rows PASS; 53/53 automat
 
 - No dependency failure is open in the worktree, but canonical bootstrap has not yet been exercised.
 - Browser-dependent captures must run sequentially on this Mac to avoid Chrome resource instability.
-- D2 is accepted through SVG because direct PNG can trigger an unmanaged browser download.
+- The public CLI accepts D2 SVG only and rejects D2 PNG before launching `d2`, preventing an unmanaged browser download.
 - The Excalidraw Skill source from `coleam00` lacked a confirmed repository license; this implementation copied no code or substantial text from it.
-- Architecture and infographic adaptations retain the applicable MIT notices under `LICENSES/` and per-Skill attribution files.
+- Cocoon AI authored the architecture pattern and NousResearch/hermes-agent adopted/distributed it; each independent MIT notice is retained under `LICENSES/`. The infographic adaptation retains its separate MIT notice and attribution.
 - Hosted renderers and public publication are deliberately absent.
 
 ## Hermes Migration Readiness

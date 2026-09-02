@@ -95,7 +95,7 @@ Read `hermes/MIGRATION.md` before moving the repository to Ubuntu. It classifies
 
 ## Attribution
 
-- The architecture pattern is adapted from the MIT-licensed Nous Research/Cocoon AI work; the notice is preserved in `LICENSES/NousResearch-hermes-agent-MIT.txt`.
+- The architecture pattern is authored by Cocoon AI and adopted/distributed through `NousResearch/hermes-agent`. Their independent MIT notices are preserved in `LICENSES/CocoonAI-architecture-diagram-generator-MIT.txt` and `LICENSES/NousResearch-hermes-agent-MIT.txt`; they are not merged.
 - The infographic layout x style idea is inspired by Jim Liu's MIT-licensed `baoyu-infographic`; the notice is preserved in `LICENSES/JimLiu-baoyu-skills-MIT.txt`.
 - The Excalidraw workflow is a clean-room implementation. `coleam00/excalidraw-diagram-skill` informed format selection, but its repository license was not confirmed, so no code or substantial instructional text was copied.
 - npm package versions are pinned in `tools/node/package.json`; Python dependencies are pinned by interpreter range in `tools/python/pyproject.toml`.
@@ -104,7 +104,7 @@ Read `hermes/MIGRATION.md` before moving the repository to Ubuntu. It classifies
 
 - macOS bootstrap requires Homebrew, uv, Node/npm, and an installed Google Chrome; it only installs missing Graphviz and D2 system packages.
 - Ubuntu/Hermes needs the documented replacement bootstrap and browser-path adaptation.
-- D2 acceptance uses SVG; direct D2 PNG may request a D2-managed browser, which this system deliberately does not download.
+- D2 accepts SVG only through the public CLI. A D2 PNG request is rejected before `d2` launches, so it cannot trigger a managed-browser download.
 - Chrome-dependent captures run sequentially for stability.
 - Visual QA is strong but bounded: novel dense diagrams can still require a human render -> inspect -> fix pass.
 - No website is published, no public SaaS renderer is enabled, and no unrelated shell, Chrome, Codex, or system configuration is changed.

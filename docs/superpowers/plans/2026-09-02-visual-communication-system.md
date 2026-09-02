@@ -381,7 +381,7 @@ Expected: FAIL because the Skill and fixture do not exist.
 
 - [ ] **Step 3: Adapt the MIT architecture pattern for Codex**
 
-Create a focused Skill and self-contained template using system fonts, semantic colors, arrows behind opaque node fills, boundary-aware legends, minimum 40px gaps, and responsive scaling. Preserve Nous Research/Cocoon AI attribution and the MIT notice.
+Create a focused Skill and self-contained template using system fonts, semantic colors, arrows behind opaque node fills, boundary-aware legends, minimum 40px gaps, and responsive scaling. Preserve Cocoon AI authorship, the NousResearch/hermes-agent adoption/distribution relationship, and both independent MIT notices.
 
 - [ ] **Step 4: Render desktop and mobile**
 

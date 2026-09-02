@@ -1,6 +1,7 @@
 from visual_renderer.cli import build_parser
 from visual_renderer.common import validate_output_path, validate_png
 from pathlib import Path
+import os
 import shutil
 import subprocess
 import pytest
@@ -55,3 +56,45 @@ def test_launcher_fails_locally_when_runtime_has_not_been_bootstrapped(tmp_path)
     assert result.returncode == 127
     assert "Run tools/scripts/bootstrap-macos.sh first" in result.stderr
     assert "uv run" not in result.stderr
+
+
+def test_public_cli_rejects_d2_png_before_starting_renderer(tmp_path):
+    """Catch a D2 PNG request escaping the no-network CLI boundary."""
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    sentinel = tmp_path / "d2-was-started"
+    fake_d2 = fake_bin / "d2"
+    fake_d2.write_text(
+        '#!/usr/bin/env bash\nprintf started > "$D2_SENTINEL"\nexit 97\n',
+        encoding="utf-8",
+    )
+    fake_d2.chmod(0o755)
+    source = tmp_path / "flow.d2"
+    source.write_text("用户 -> Hermes", encoding="utf-8")
+    output = tmp_path / "flow.png"
+    environment = {
+        **os.environ,
+        "D2_SENTINEL": str(sentinel),
+        "PATH": f"{fake_bin}:{os.environ['PATH']}",
+    }
+
+    result = subprocess.run(
+        [
+            str(ROOT / "tools/bin/render-diagram"),
+            "diagram",
+            "--lang",
+            "d2",
+            "--in",
+            str(source),
+            "--out",
+            str(output),
+        ],
+        text=True,
+        capture_output=True,
+        env=environment,
+    )
+
+    assert result.returncode == 2
+    assert "D2 output is SVG only" in result.stderr
+    assert not sentinel.exists()
+    assert not output.exists()
