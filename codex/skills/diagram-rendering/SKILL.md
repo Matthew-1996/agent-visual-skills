@@ -26,10 +26,10 @@ tools/bin/render-diagram diagram --lang graphviz --in INPUT.dot --out OUTPUT.png
 tools/bin/render-diagram chart --config INPUT.json --out OUTPUT.png
 ```
 
-Output may be `.png` or `.svg`; Mermaid accepts `.mmd` or `.mermaid`, and
-Graphviz accepts `.dot` or `.gv`. Decode and inspect the output for labels,
-bounds, real relationships, and legibility before delivery. Do not install
-dependencies or use a hosted renderer to recover from failure.
+Structured diagrams may use `.png` or `.svg`; Mermaid accepts `.mmd` or
+`.mermaid`, and Graphviz accepts `.dot` or `.gv`. Charts render `.png` only.
+Decode and inspect the output for labels, bounds, real relationships, and
+legibility before delivery. Do not install dependencies or use a hosted renderer to recover from failure.
 
 Route whiteboard-like spatial reasoning to `excalidraw-diagram`; architecture
 presentations to `architecture-diagram`; polished static explainers to

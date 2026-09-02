@@ -19,8 +19,8 @@ quota.
    - Level 1: inline prose, Markdown table, tree, timeline, or Unicode flow
      for small or linear structure. No renderer.
    - Level 2: local diagram or chart when a visual canvas clarifies relations,
-     topology, branches, or a numeric trend. Use `diagram-rendering`,
-     `excalidraw-diagram`, or the local chart command as appropriate.
+     topology, branches, or a numeric trend. Use `diagram-rendering` for every structured diagram or chart. Use
+     `excalidraw-diagram` for whiteboard-like spatial reasoning.
    - Level 3: `architecture-diagram`, `infographic`, or `web-visual` only for
      an architecture view, polished explanatory summary, or needed interaction.
 4. Select one specialist. Use overview plus detail only when the overview
