@@ -85,3 +85,16 @@ def test_router_explicitly_reads_shared_selection_and_style_from_stable_home():
 
     assert f"{stable}visual-selection.md" in router
     assert f"{stable}visual-style.md" in router
+
+
+def test_router_defaults_to_one_desktop_html_and_defers_other_exports():
+    router = Path("codex/skills/visual-communication/SKILL.md").read_text(encoding="utf-8")
+    style = Path("shared/visual-style.md").read_text(encoding="utf-8")
+
+    for text in (router, style):
+        assert "desktop" in text
+        assert "one self-contained" in text
+        assert "mobile" in text
+        assert "SVG" in text
+        assert "PNG" in text
+        assert "explicitly" in text

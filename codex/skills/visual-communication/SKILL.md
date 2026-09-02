@@ -30,7 +30,12 @@ quota.
 5. Select one specialist. Use overview plus detail only when the overview
    answers a different question from a necessary detailed view; label both and
    avoid repeating the same relationships.
-6. Retain editable source for rendered output and inspect it before delivery.
+6. Default this installation's delivery context to desktop. For a rendered
+   visual, return exactly one self-contained local HTML that the user can
+   preview directly. Do not also generate a mobile variant, SVG, or PNG unless
+   the user explicitly says the result is for mobile or asks for that export;
+   perform the conversion only when requested.
+7. Retain editable source for rendered output and inspect it before delivery.
    Read `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/codex/skills/visual-communication/references/examples.md`
    only when choosing a summary form.
 

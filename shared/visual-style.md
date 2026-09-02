@@ -6,7 +6,7 @@ Prefer 中文 output and Chinese system fonts in this order: `PingFang SC`, `Hir
 
 ## Layout
 
-Use a readable hierarchy, generous whitespace, and one main message. Design for mobile first: test at a `390px` viewport, avoid horizontal overflow, keep touch targets and labels legible, and wrap long text rather than shrinking it below readability. Responsive HTML must be self-contained with inline CSS/SVG and no network dependency.
+Use a readable hierarchy, generous whitespace, and one main message. In this installation, assume the user is viewing on desktop and deliver exactly one self-contained, locally previewable HTML by default. Do not generate or attach a mobile variant, SVG, or PNG unless the user explicitly requests that target or conversion. When mobile is requested, test at a `390px` viewport, avoid horizontal overflow, keep touch targets and labels legible, and wrap long text rather than shrinking it below readability. HTML must use inline CSS/SVG and have no network dependency.
 
 ## Data integrity
 
