@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>个人 Agent 架构图</title>
+<style>
+  :root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+  * { box-sizing: border-box; } body { margin: 0; padding: clamp(16px, 4vw, 48px); color: #e2e8f0; background: #020617; }
+  main { max-width: 1360px; margin: auto; } .eyebrow { color:#67e8f9; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; } h1 { margin: 7px 0; font-size: clamp(24px, 4vw, 38px); } .subtitle { margin: 0 0 24px; color: #94a3b8; }
+  .panel, .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 18px; } .panel { padding: clamp(12px, 2vw, 26px); box-shadow: 0 20px 60px #0008; }
+  svg { display:block; width:100%; height:auto; } .mobile-diagram { display:none; } .cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:16px; } .card { padding:16px; } .card h2 { margin:0 0 8px; font-size:15px; } .card p { margin:0; color:#94a3b8; font-size:13px; line-height:1.55; } footer { margin:18px 0 0; color:#64748b; font-size:12px; text-align:center; }
+  @media (max-width: 640px) { body { padding:16px; } .cards { grid-template-columns:1fr; } .panel { padding:10px; } .desktop-diagram { display:none; } .mobile-diagram { display:block; } }
+</style>
+<main>
+  <div class="eyebrow">Personal Agent · offline architecture</div>
+  <h1>个人 Agent：本地优先、边界清晰</h1>
+  <p class="subtitle">Mac Codex 负责编排与审阅；GitHub 承载版本；阿里云 Hermes 提供受控服务；飞书是协作入口。</p>
+  <section class="panel">
+    <!--
+      LAYOUT PLAN (20px grid):
+      [Mac Codex] x=80,y=340 W=180,H=100 → GitHub, Hermes, Feishu
+      [GitHub] x=360,y=340 W=160,H=100 → Hermes
+      [阿里云 Hermes] x=680,y=340 W=200,H=100 → GitHub, Feishu
+      [飞书] x=1040,y=340 W=160,H=100 → Mac Codex
+      云边界 x=600,y=160 W=360,H=480; legend y=720 (outside boundary)
+    -->
+    <svg class="desktop-diagram" viewBox="0 0 1280 900" role="img" aria-labelledby="diagram-title diagram-desc">
+      <title id="diagram-title">Mac Codex、GitHub、阿里云 Hermes 与飞书的架构图</title><desc id="diagram-desc">本地 Mac 通过 GitHub 和受控云主机协作，并与飞书交换经审批的信息。</desc>
+      <defs>
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0L0 0 0 40" fill="none" stroke="#1e293b" stroke-width=".5"/></pattern>
+        <marker id="arrow-slate" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8z" fill="#94a3b8"/></marker>
+        <marker id="arrow-green" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8z" fill="#34d399"/></marker>
+        <marker id="arrow-rose" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8z" fill="#fb7185"/></marker>
+      </defs>
+      <rect width="1280" height="900" rx="16" fill="#020617"/><rect width="1280" height="900" rx="16" fill="url(#grid)"/>
+      <!-- boundary: ends at 640; legend begins at 720 -->
+      <rect x="600" y="160" width="360" height="480" rx="16" fill="#fbbf240c" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="8 5"/>
+      <text x="624" y="196" fill="#fbbf24" font-size="16" font-weight="700">阿里云 · 私有计算边界</text><text x="624" y="220" fill="#cbd5e1" font-size="12">Hermes 仅处理已授权的后台任务</text>
+      <!-- arrows are deliberately behind opaque node masks -->
+      <g fill="none" stroke-width="2" marker-end="url(#arrow-slate)">
+        <line x1="260" y1="374" x2="358" y2="374"/><line x1="520" y1="374" x2="678" y2="374" stroke="#34d399" marker-end="url(#arrow-green)"/>
+        <path d="M260 408 L300 408 L300 500 L960 500 L960 408 L1038 408" stroke="#fb7185" stroke-dasharray="7 6" marker-end="url(#arrow-rose)"/>
+        <path d="M1040 360 L1000 360 L1000 280 L170 280 L170 338" stroke="#94a3b8"/>
+        <path d="M780 440 L780 560 L440 560 L440 442" stroke="#34d399" marker-end="url(#arrow-green)"/>
+      </g>
+      <g font-size="12" font-weight="600"><text x="310" y="358" fill="#cbd5e1">版本提交</text><text x="580" y="358" fill="#86efac">受控部署</text><text x="590" y="486" fill="#fda4af">审批后协作</text><text x="612" y="548" fill="#86efac">审计与回退</text><text x="560" y="268" fill="#cbd5e1">通知与任务</text></g>
+      <!-- nodes: opaque masks first, styled boxes second -->
+      <g>
+        <rect x="80" y="340" width="180" height="100" rx="12" fill="#0f172a"/><rect x="80" y="340" width="180" height="100" rx="12" fill="#08334499" stroke="#22d3ee" stroke-width="2"/>
+        <text x="170" y="380" text-anchor="middle" fill="#fff" font-size="19" font-weight="700">Mac Codex</text><text x="170" y="408" text-anchor="middle" fill="#a5f3fc" font-size="13">本地编排 · 人工审阅</text>
+        <rect x="360" y="340" width="160" height="100" rx="12" fill="#0f172a"/><rect x="360" y="340" width="160" height="100" rx="12" fill="#1e293bcc" stroke="#94a3b8" stroke-width="2"/>
+        <text x="440" y="380" text-anchor="middle" fill="#fff" font-size="19" font-weight="700">GitHub</text><text x="440" y="408" text-anchor="middle" fill="#cbd5e1" font-size="13">代码 · 版本 · Actions</text>
+        <rect x="680" y="340" width="200" height="100" rx="12" fill="#0f172a"/><rect x="680" y="340" width="200" height="100" rx="12" fill="#064e3b99" stroke="#34d399" stroke-width="2"/>
+        <text x="780" y="380" text-anchor="middle" fill="#fff" font-size="19" font-weight="700">阿里云 Hermes</text><text x="780" y="408" text-anchor="middle" fill="#a7f3d0" font-size="13">服务运行 · 受控执行</text>
+        <rect x="1040" y="340" width="160" height="100" rx="12" fill="#0f172a"/><rect x="1040" y="340" width="160" height="100" rx="12" fill="#1e293bcc" stroke="#94a3b8" stroke-width="2"/>
+        <text x="1120" y="380" text-anchor="middle" fill="#fff" font-size="19" font-weight="700">飞书</text><text x="1120" y="408" text-anchor="middle" fill="#cbd5e1" font-size="13">文档 · 消息 · 审批</text>
+      </g>
+      <!-- Legend lives outside cloud boundary -->
+      <g transform="translate(80 720)"><rect width="1120" height="100" rx="14" fill="#0f172a" stroke="#334155"/>
+        <text x="24" y="36" fill="#e2e8f0" font-size="15" font-weight="700">图例与边界</text>
+        <circle cx="230" cy="31" r="7" fill="#22d3ee"/><text x="246" y="36" fill="#cbd5e1" font-size="13">本地交互</text><circle cx="390" cy="31" r="7" fill="#34d399"/><text x="406" y="36" fill="#cbd5e1" font-size="13">受控服务流</text><circle cx="570" cy="31" r="7" fill="#94a3b8"/><text x="586" y="36" fill="#cbd5e1" font-size="13">外部协作</text>
+        <line x1="230" y1="68" x2="290" y2="68" stroke="#fb7185" stroke-width="2" stroke-dasharray="7 6"/><text x="304" y="73" fill="#cbd5e1" font-size="13">需要审批的信息流</text><rect x="570" y="58" width="64" height="20" rx="4" fill="#fbbf240c" stroke="#fbbf24" stroke-dasharray="5 3"/><text x="648" y="73" fill="#cbd5e1" font-size="13">私有计算边界</text>
+      </g>
+    </svg>
+    <svg class="mobile-diagram" viewBox="0 0 360 720" role="img" aria-label="个人 Agent 移动端架构图">
+      <defs><marker id="ma" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0L8 3L0 6z" fill="#94a3b8"/></marker><marker id="mg" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0L8 3L0 6z" fill="#34d399"/></marker></defs>
+      <rect width="360" height="720" rx="14" fill="#020617"/>
+      <rect x="40" y="300" width="280" height="200" rx="14" fill="#fbbf240c" stroke="#fbbf24" stroke-dasharray="7 4"/><text x="58" y="326" fill="#fbbf24" font-size="12" font-weight="700">阿里云私有计算边界</text>
+      <!-- arrows precede node masks -->
+      <g fill="none" stroke-width="2" marker-end="url(#ma)"><line x1="180" y1="150" x2="180" y2="198"/><line x1="180" y1="270" x2="180" y2="348" stroke="#34d399" marker-end="url(#mg)"/><line x1="180" y1="420" x2="180" y2="548"/><path d="M260 385L300 385L300 583L262 583" stroke="#fb7185" stroke-dasharray="6 5"/></g>
+      <g font-size="10" fill="#cbd5e1"><text x="194" y="178">提交</text><text x="194" y="308" fill="#86efac">受控部署</text><text x="194" y="488">通知</text><text x="265" y="480" fill="#fda4af">审批</text></g>
+      <g text-anchor="middle"><rect x="100" y="80" width="160" height="70" rx="10" fill="#0f172a"/><rect x="100" y="80" width="160" height="70" rx="10" fill="#08334499" stroke="#22d3ee" stroke-width="2"/><text x="180" y="112" fill="#fff" font-size="16" font-weight="700">Mac Codex</text><text x="180" y="133" fill="#a5f3fc" font-size="10">本地审阅</text>
+      <rect x="100" y="200" width="160" height="70" rx="10" fill="#0f172a"/><rect x="100" y="200" width="160" height="70" rx="10" fill="#1e293bcc" stroke="#94a3b8" stroke-width="2"/><text x="180" y="232" fill="#fff" font-size="16" font-weight="700">GitHub</text><text x="180" y="253" fill="#cbd5e1" font-size="10">版本与回退</text>
+      <rect x="100" y="350" width="160" height="70" rx="10" fill="#0f172a"/><rect x="100" y="350" width="160" height="70" rx="10" fill="#064e3b99" stroke="#34d399" stroke-width="2"/><text x="180" y="382" fill="#fff" font-size="16" font-weight="700">阿里云 Hermes</text><text x="180" y="403" fill="#a7f3d0" font-size="10">受控执行</text>
+      <rect x="100" y="550" width="160" height="70" rx="10" fill="#0f172a"/><rect x="100" y="550" width="160" height="70" rx="10" fill="#1e293bcc" stroke="#94a3b8" stroke-width="2"/><text x="180" y="582" fill="#fff" font-size="16" font-weight="700">飞书</text><text x="180" y="603" fill="#cbd5e1" font-size="10">文档、消息、审批</text></g>
+      <rect x="40" y="660" width="280" height="36" rx="8" fill="#0f172a" stroke="#334155"/><text x="180" y="683" text-anchor="middle" fill="#cbd5e1" font-size="11">虚线：需审批的信息流</text>
+    </svg>
+  </section>
+  <section class="cards"><article class="card"><h2>本地优先</h2><p>敏感上下文留在 Mac；每一次外发均由人确认。</p></article><article class="card"><h2>可回溯</h2><p>GitHub 保存变更历史，Hermes 操作应具备日志和可回退路径。</p></article><article class="card"><h2>最小权限</h2><p>飞书与云端仅得到当前任务所需的已授权数据。</p></article></section>
+  <footer>离线单文件 · 内联 CSS/SVG · 无外部字体、脚本或资源</footer>
+</main>

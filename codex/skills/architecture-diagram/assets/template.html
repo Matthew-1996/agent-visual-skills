@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>离线架构图模板</title>
+<style>
+  :root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+  * { box-sizing: border-box; } body { margin: 0; padding: clamp(16px, 4vw, 44px); background: #020617; color: #e2e8f0; }
+  main { max-width: 1320px; margin: auto; } .panel { padding: clamp(12px, 2vw, 24px); border: 1px solid #1e293b; border-radius: 18px; background: #0f172a; }
+  svg { width: 100%; height: auto; display: block; } .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+  .card { border: 1px solid #1e293b; border-radius: 12px; padding: 16px; background: #0f172a; } @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
+</style>
+<main>
+  <h1>系统架构</h1><p>离线单文件 · 使用内联 SVG 和系统字体</p>
+  <section class="panel">
+    <!-- 布局计划：在这里列出每个组件的 x,y,WxH 及连线。箭头必须在节点前绘制。 -->
+    <svg viewBox="0 0 1200 700" role="img" aria-label="系统架构图">
+      <defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8z" fill="#94a3b8"/></marker></defs>
+      <rect width="1200" height="700" fill="#020617"/>
+      <!-- 边界、箭头、节点和图例依次放在这里。每个节点用不透明底遮挡箭头。 -->
+    </svg>
+  </section>
+  <section class="cards"><article class="card">边界</article><article class="card">数据流</article><article class="card">运维</article></section>
+</main>
