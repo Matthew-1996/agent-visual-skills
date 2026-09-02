@@ -115,4 +115,3 @@ approach, complexity budget, and connector discipline are adapted from
 `cathrynlavery/diagram-design` version 2.6 under the MIT License. Remote Google
 Fonts and the upstream first-run onboarding gate are intentionally not adopted
 because this system is offline-first and already has an approved global default.
-

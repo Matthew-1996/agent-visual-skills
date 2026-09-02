@@ -103,4 +103,3 @@ Commit all task files with message:
 ```bash
 git commit -m "feat: add editorial visual profile"
 ```
-
