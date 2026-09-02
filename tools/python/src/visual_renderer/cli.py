@@ -7,6 +7,8 @@ import sys
 from pathlib import Path
 
 from .common import validate_output_path, validate_readable_input
+from .browser import screenshot_html
+from .charts import render_chart
 from .diagrams import render_diagram
 
 
@@ -32,6 +34,8 @@ def build_parser() -> argparse.ArgumentParser:
     html = commands.add_parser("html", help="screenshot a local HTML document")
     html.add_argument("--in", dest="input_path", required=True, metavar="PATH")
     html.add_argument("--out", dest="output_path", required=True, metavar="PATH")
+    html.add_argument("--width", type=int, default=1440, metavar="PIXELS")
+    html.add_argument("--height", type=int, default=900, metavar="PIXELS")
 
     excalidraw = commands.add_parser("excalidraw", help="render a local Excalidraw scene")
     excalidraw.add_argument("--in", dest="input_path", required=True, metavar="PATH")
@@ -65,6 +69,18 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "diagram":
         try:
             render_diagram(args.lang, Path(args.input_path), Path(args.output_path))
+        except (RuntimeError, ValueError) as exc:
+            print(f"visual-render: {exc}", file=sys.stderr)
+            return 1
+    elif args.command == "chart":
+        try:
+            render_chart(Path(args.config), Path(args.output_path))
+        except (RuntimeError, ValueError) as exc:
+            print(f"visual-render: {exc}", file=sys.stderr)
+            return 1
+    elif args.command == "html":
+        try:
+            screenshot_html(Path(args.input_path), Path(args.output_path), (args.width, args.height))
         except (RuntimeError, ValueError) as exc:
             print(f"visual-render: {exc}", file=sys.stderr)
             return 1

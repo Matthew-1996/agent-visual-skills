@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from PIL import Image
 
 from visual_renderer.diagrams import render_diagram
 from visual_renderer.cli import main
@@ -48,3 +49,11 @@ def test_cli_diagram_subcommand_invokes_the_renderer(tmp_path):
         ["diagram", "--lang", "graphviz", "--in", str(FIXTURES / "dependencies.dot"), "--out", str(output)]
     ) == 0
     assert output.read_text(encoding="utf-8").lstrip().startswith("<svg")
+
+
+def test_structured_graphviz_diagram_is_a_decodable_png(tmp_path):
+    """Catch a Graphviz PNG regression that emits a non-image or tiny output."""
+    output = render_diagram("graphviz", FIXTURES / "dependencies.dot", tmp_path / "dependencies.png")
+
+    assert Image.open(output).format == "PNG"
+    assert Image.open(output).size[0] >= 800
