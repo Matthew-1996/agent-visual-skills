@@ -1,8 +1,12 @@
 from pathlib import Path
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import os
+import threading
 
 import pytest
 from PIL import Image
 
+from visual_renderer import diagrams
 from visual_renderer.diagrams import render_diagram
 from visual_renderer.cli import main
 
@@ -57,3 +61,72 @@ def test_structured_graphviz_diagram_is_a_decodable_png(tmp_path):
 
     assert Image.open(output).format == "PNG"
     assert Image.open(output).size[0] >= 800
+
+
+def test_direct_api_rejects_d2_png_before_spawning_d2(monkeypatch, tmp_path):
+    """Catch direct Python callers bypassing the public CLI's D2 SVG-only gate."""
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    sentinel = tmp_path / "d2-started"
+    fake_d2 = fake_bin / "d2"
+    fake_d2.write_text(
+        '#!/usr/bin/env bash\nprintf started > "$D2_SENTINEL"\n',
+        encoding="utf-8",
+    )
+    fake_d2.chmod(0o755)
+    monkeypatch.setenv("D2_SENTINEL", str(sentinel))
+    monkeypatch.setenv("PATH", f"{fake_bin}:{os.environ['PATH']}")
+
+    with pytest.raises(ValueError, match="D2 output is SVG only"):
+        render_diagram("d2", FIXTURES / "chinese-flow.d2", tmp_path / "flow.png")
+
+    assert not sentinel.exists()
+
+
+def test_mermaid_remote_reference_is_rejected_before_renderer_connection(
+    monkeypatch, tmp_path
+):
+    """Catch Mermaid content reaching a remote resource before local rendering starts."""
+
+    class SentinelHandler(BaseHTTPRequestHandler):
+        requests: list[str] = []
+
+        def do_GET(self):  # noqa: N802 - stdlib handler contract
+            type(self).requests.append(self.path)
+            self.send_response(204)
+            self.end_headers()
+
+        def log_message(self, format, *args):  # noqa: A003 - stdlib handler contract
+            return
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), SentinelHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        source = tmp_path / "remote.mmd"
+        remote = f"http://127.0.0.1:{server.server_port}/external.svg"
+        source.write_text(
+            f'flowchart LR\n  A[<img src="{remote}">] --> B\n',
+            encoding="utf-8",
+        )
+        fake_mmdc = tmp_path / "mmdc"
+        fake_mmdc.write_text(
+            "#!/usr/bin/env python3\n"
+            "import os, pathlib, sys, urllib.request\n"
+            "urllib.request.urlopen(os.environ['MERMAID_SENTINEL_URL'], timeout=2).read()\n"
+            "out = pathlib.Path(sys.argv[sys.argv.index('-o') + 1])\n"
+            "out.write_text('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\"><text font-size=\"16\">x</text></svg>')\n",
+            encoding="utf-8",
+        )
+        fake_mmdc.chmod(0o755)
+        monkeypatch.setattr(diagrams, "_MMDC", fake_mmdc)
+        monkeypatch.setenv("MERMAID_SENTINEL_URL", remote)
+
+        with pytest.raises(ValueError, match="remote reference"):
+            render_diagram("mermaid", source, tmp_path / "remote.svg")
+
+        assert SentinelHandler.requests == []
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)

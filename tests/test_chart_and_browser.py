@@ -1,8 +1,12 @@
 from pathlib import Path
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import json
+import threading
 
 from PIL import Image
 import pytest
 
+from visual_renderer import browser
 from visual_renderer.browser import inspect_html, screenshot_html
 from visual_renderer import charts
 from visual_renderer.charts import render_chart
@@ -11,6 +15,32 @@ from visual_renderer.cli import main
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "tests" / "fixtures"
+
+
+class _ConnectionSentinel(BaseHTTPRequestHandler):
+    requests: list[str] = []
+
+    def do_GET(self):  # noqa: N802 - stdlib handler contract
+        type(self).requests.append(self.path)
+        self.send_response(204)
+        self.end_headers()
+
+    def log_message(self, format, *args):  # noqa: A003 - stdlib handler contract
+        return
+
+
+@pytest.fixture
+def connection_sentinel():
+    _ConnectionSentinel.requests = []
+    server = ThreadingHTTPServer(("127.0.0.1", 0), _ConnectionSentinel)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield server, _ConnectionSentinel.requests
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
 
 
 def test_chart_and_html_are_real_pngs(tmp_path):
@@ -39,6 +69,33 @@ def test_browser_blocks_external_requests_and_rejects_screenshot(tmp_path):
     assert any("blocked external network request: https://example.invalid/blocked.js" in error for error in audit.console_errors)
     with pytest.raises(RuntimeError, match="blocked external network request"):
         screenshot_html(source, tmp_path / "remote.png", (390, 844))
+
+
+def test_browser_context_denies_http_websocket_popup_and_service_worker_connections(
+    connection_sentinel, tmp_path
+):
+    """Catch non-page requests escaping the shared HTML/Excalidraw browser boundary."""
+    server, requests = connection_sentinel
+    origin = f"http://127.0.0.1:{server.server_port}"
+    source = tmp_path / "network-sentinel.html"
+    source.write_text(
+        "<!doctype html><html><body><script>"
+        f"fetch({json.dumps(origin + '/fetch')}).catch(() => {{}});"
+        f"new WebSocket({json.dumps(origin.replace('http:', 'ws:') + '/socket')});"
+        f"window.open({json.dumps(origin + '/popup')}, '_blank');"
+        f"navigator.serviceWorker?.register({json.dumps(origin + '/worker.js')}).catch(() => {{}});"
+        "</script></body></html>",
+        encoding="utf-8",
+    )
+
+    def wait_for_attempts(page, console_errors, page_errors):
+        page.wait_for_timeout(500)
+        return browser._audit(page, console_errors, page_errors)
+
+    audit = browser._with_page(source, (390, 844), wait_for_attempts)
+
+    assert requests == []
+    assert any(origin in error for error in audit.console_errors)
 
 
 def test_screenshot_rejects_horizontal_overflow(tmp_path):

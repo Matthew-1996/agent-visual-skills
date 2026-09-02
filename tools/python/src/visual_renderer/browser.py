@@ -8,7 +8,7 @@ from pathlib import Path
 import shutil
 from urllib.parse import urlsplit
 
-from playwright.sync_api import Browser, Page, Route, sync_playwright
+from playwright.sync_api import Browser, BrowserContext, Page, Route, sync_playwright
 
 from .common import validate_output_path, validate_png, validate_readable_input
 
@@ -23,6 +23,19 @@ _LINUX_BROWSER_CANDIDATES = (
     "google-chrome",
     "google-chrome-stable",
 )
+_HARDENED_CHROMIUM_ARGS = (
+    "--disable-background-networking",
+    "--disable-component-update",
+    "--disable-default-apps",
+    "--disable-domain-reliability",
+    "--disable-features=AutofillServerCommunication,CertificateTransparencyComponentUpdater,InterestFeedContentSuggestions,MediaRouter,OptimizationHints,Translate",
+    "--disable-sync",
+    "--metrics-recording-only",
+    "--no-default-browser-check",
+    "--no-first-run",
+    "--safebrowsing-disable-auto-update",
+)
+_NETWORK_SCHEMES = {"http", "https", "ws", "wss"}
 
 
 @dataclass(frozen=True)
@@ -55,26 +68,9 @@ def resolve_chrome() -> Path:
     )
 
 
-def _load_page(page: Page, input_path: Path) -> tuple[list[str], list[str]]:
-    console_errors: list[str] = []
-    page_errors: list[str] = []
-
-    def route_local_only(route: Route) -> None:
-        url = route.request.url
-        if urlsplit(url).scheme.lower() in {"file", "data", "blob"}:
-            route.continue_()
-            return
-        console_errors.append(f"blocked external network request: {url}")
-        route.abort()
-
-    page.route("**/*", route_local_only)
-    page.on(
-        "console", lambda message: console_errors.append(message.text) if message.type == "error" else None
-    )
-    page.on("pageerror", lambda error: page_errors.append(str(error)))
+def _load_page(page: Page, input_path: Path) -> None:
     page.goto(input_path.resolve().as_uri(), wait_until="load")
     page.evaluate("() => document.fonts.ready")
-    return console_errors, page_errors
 
 
 def _audit(page: Page, console_errors: list[str], page_errors: list[str]) -> BrowserAudit:
@@ -88,13 +84,69 @@ def _with_page(input_path: Path, viewport: tuple[int, int], action):
         raise ValueError("viewport dimensions must be positive")
     with sync_playwright() as playwright:
         browser: Browser = playwright.chromium.launch(
-            executable_path=str(resolve_chrome()), headless=True
+            executable_path=str(resolve_chrome()),
+            headless=True,
+            args=list(_HARDENED_CHROMIUM_ARGS),
         )
+        context: BrowserContext | None = None
         try:
-            page = browser.new_page(viewport={"width": width, "height": height})
-            console_errors, page_errors = _load_page(page, input_path)
+            console_errors: list[str] = []
+            page_errors: list[str] = []
+            context = browser.new_context(
+                viewport={"width": width, "height": height},
+                offline=True,
+                service_workers="block",
+            )
+
+            def route_local_only(route: Route) -> None:
+                url = route.request.url
+                scheme = urlsplit(url).scheme.lower()
+                if scheme not in _NETWORK_SCHEMES:
+                    route.continue_()
+                    return
+                console_errors.append(f"blocked external network request: {url}")
+                route.abort("blockedbyclient")
+
+            attached_pages: set[int] = set()
+
+            def attach_page(candidate: Page) -> None:
+                identity = id(candidate)
+                if identity in attached_pages:
+                    return
+                attached_pages.add(identity)
+                candidate.on(
+                    "console",
+                    lambda message: console_errors.append(message.text)
+                    if message.type == "error"
+                    else None,
+                )
+                candidate.on("pageerror", lambda error: page_errors.append(str(error)))
+
+            context.route("**/*", route_local_only)
+            context.add_init_script(
+                """
+                (() => {
+                  const NativeWebSocket = globalThis.WebSocket;
+                  if (!NativeWebSocket) return;
+                  globalThis.WebSocket = new Proxy(NativeWebSocket, {
+                    construct(_target, args) {
+                      throw new DOMException(
+                        `blocked external WebSocket: ${String(args[0] ?? '')}`,
+                        'SecurityError'
+                      );
+                    }
+                  });
+                })();
+                """
+            )
+            context.on("page", attach_page)
+            page = context.new_page()
+            attach_page(page)
+            _load_page(page, input_path)
             return action(page, console_errors, page_errors)
         finally:
+            if context is not None:
+                context.close()
             browser.close()
 
 
