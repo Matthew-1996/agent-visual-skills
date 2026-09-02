@@ -18,7 +18,9 @@ quota.
 3. Read `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/visual-selection.md`
    for the routing matrix and
    `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/visual-style.md` for
-   delivery constraints.
+   delivery constraints. A designed HTML must consume the active profile at
+   `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/style-profiles/editorial-v1.md`
+   and `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/iconography.md`.
 4. Choose the lowest sufficient level and exactly one primary representation:
    - Level 1: inline prose, Markdown table, tree, timeline, or Unicode flow
      for small or linear structure. No renderer.

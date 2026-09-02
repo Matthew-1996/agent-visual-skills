@@ -14,6 +14,12 @@ TOKENS = {
     "#eb6c36",
     "#2e5aa8",
 }
+HTML_ARTIFACTS = (
+    "examples/editorial-v1-system-architecture.html",
+    "codex/skills/architecture-diagram/assets/template.html",
+    "codex/skills/infographic/assets/template.html",
+    "codex/skills/web-visual/assets/template.html",
+)
 
 
 class DiagramMarkup(HTMLParser):
@@ -76,17 +82,25 @@ def test_golden_architecture_is_local_accessible_and_within_editorial_complexity
     assert diagram.icons
     assert all(icon.get("viewbox") == "0 0 24 24" for icon in diagram.icons)
     assert all(icon.get("aria-hidden") == "true" for icon in diagram.icons)
+    assert all(icon.get("fill") == "none" for icon in diagram.icons)
+    assert all(icon.get("stroke") == "currentColor" for icon in diagram.icons)
+    assert all(icon.get("stroke-width") == "1.5" for icon in diagram.icons)
+    assert all(icon.get("stroke-linecap") == "round" for icon in diagram.icons)
+    assert all(icon.get("stroke-linejoin") == "round" for icon in diagram.icons)
+    assert not re.search(r"[^}]*\.icon[^}]*\bfill\s*:", markup)
+    assert 'd="M670 280V390H482"' in markup
+    assert 'd="M670 300' not in markup
     assert {"客户入口", "决策服务", "数据存储"} <= set(diagram.labels)
 
 
-def test_templates_demonstrate_the_offline_editorial_profile():
-    for relative in (
-        "codex/skills/architecture-diagram/assets/template.html",
-        "codex/skills/infographic/assets/template.html",
-        "codex/skills/web-visual/assets/template.html",
-    ):
+def test_html_artifacts_use_only_semantic_palette_tokens_and_accent_tint():
+    for relative in HTML_ARTIFACTS:
         markup = (ROOT / relative).read_text(encoding="utf-8")
         assert "#f5f5f5" in markup
         assert "#eb6c36" in markup
+        assert set(re.findall(r"#[0-9a-fA-F]{3,8}\b", markup)) <= TOKENS
+        assert "white" not in markup.lower()
+        assert "--accent-tint:rgba(235,108,54,.08)" in markup
+        assert set(re.findall(r"rgba\([^)]*\)", markup)) <= {"rgba(235,108,54,.08)"}
         assert "color-scheme: dark" not in markup
         assert not re.search(r"https?://|//[a-z0-9.-]+\.(?:css|js|svg|png|jpg|woff2?)", markup, re.I)

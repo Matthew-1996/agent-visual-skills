@@ -87,6 +87,15 @@ def test_router_explicitly_reads_shared_selection_and_style_from_stable_home():
     assert f"{stable}visual-style.md" in router
 
 
+def test_router_directs_designed_html_to_the_active_profile_and_iconography():
+    router = Path("codex/skills/visual-communication/SKILL.md").read_text(encoding="utf-8")
+    stable = "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/"
+
+    assert "designed HTML" in router
+    assert f"{stable}style-profiles/editorial-v1.md" in router
+    assert f"{stable}iconography.md" in router
+
+
 def test_router_defaults_to_one_desktop_html_and_defers_other_exports():
     router = Path("codex/skills/visual-communication/SKILL.md").read_text(encoding="utf-8")
     style = Path("shared/visual-style.md").read_text(encoding="utf-8")
