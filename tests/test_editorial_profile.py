@@ -22,6 +22,14 @@ HTML_ARTIFACTS = (
     "codex/skills/infographic/assets/template.html",
     "codex/skills/web-visual/assets/template.html",
 )
+SIX_SKILLS = {
+    "visual-communication",
+    "excalidraw-diagram",
+    "diagram-rendering",
+    "architecture-diagram",
+    "infographic",
+    "web-visual",
+}
 ACCENT_TINT = "rgba(235,108,54,.08)"
 COLOR_FUNCTION = re.compile(r"\b(?:rgba?|hsla?)\([^)]*\)", re.I)
 CSS_COLOR_DECLARATION = re.compile(
@@ -103,9 +111,9 @@ def test_golden_architecture_is_local_accessible_and_within_editorial_complexity
 
     assert TOKENS <= set(re.findall(r"#[0-9a-fA-F]{6}", markup))
     assert not re.search(r"https?://|//[a-z0-9.-]+\.(?:css|js|svg|png|jpg|woff2?)", markup, re.I)
-    assert diagram.node_count <= 9
-    assert diagram.connector_count <= 12
-    assert diagram.accent_count <= 2
+    assert diagram.node_count == 6
+    assert 5 <= diagram.connector_count <= 6
+    assert diagram.accent_count == 1
     assert diagram.icons
     assert all(icon.get("viewbox") == "0 0 24 24" for icon in diagram.icons)
     assert all(icon.get("aria-hidden") == "true" for icon in diagram.icons)
@@ -115,9 +123,13 @@ def test_golden_architecture_is_local_accessible_and_within_editorial_complexity
     assert all(icon.get("stroke-linecap") == "round" for icon in diagram.icons)
     assert all(icon.get("stroke-linejoin") == "round" for icon in diagram.icons)
     assert not re.search(r"[^}]*\.icon[^}]*\bfill\s*:", markup)
-    assert 'd="M670 280V390H482"' in markup
-    assert 'd="M670 300' not in markup
-    assert {"客户入口", "决策服务", "数据存储"} <= set(diagram.labels)
+    assert SIX_SKILLS <= set(diagram.labels)
+
+
+def test_golden_architecture_names_all_six_skills():
+    markup = (ROOT / "examples/editorial-v1-system-architecture.html").read_text(encoding="utf-8")
+
+    assert all(skill in markup for skill in SIX_SKILLS)
 
 
 def test_html_artifacts_use_only_semantic_palette_tokens_and_accent_tint():
