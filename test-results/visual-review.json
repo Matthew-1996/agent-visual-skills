@@ -23,27 +23,27 @@
       "balance": "PASS",
       "clipping": "PASS",
       "glyphs": "PASS",
-      "notes": "The fixed scene has distinct aligned nodes, two unambiguous arrows through whitespace, readable Chinese, visible export padding, and balanced supporting labels.",
+      "notes": "The fixed scene has distinct aligned nodes, two unambiguous arrows through whitespace, readable Chinese, visible export padding, and the 调用工具 label remains adjacent to and bound to its arrow.",
       "overlap": "PASS",
-      "sha256": "64b938814ee3763a2db583c40136abb7cba0ca9779458ccf062d513e3bb3f5e3"
+      "sha256": "b52646a9540f0a8d8b81697a3be08b71a1abe4cd8b7a45d59dffce3074b2f3f7"
     },
     "test-results/acceptance-artifacts/flow.svg": {
       "arrows": "PASS",
       "balance": "PASS",
       "clipping": "PASS",
       "glyphs": "PASS",
-      "notes": "Original 1473x274 D2 SVG was rendered locally in Chrome for inspection; request arrows run from user through Feishu and Hermes to Mac Codex, while distinct return arrows complete the round trip without label collisions.",
+      "notes": "The 452x829 vertical D2 SVG and its 390px delivery view retain readable Chinese; request arrows run from user through Feishu and Hermes to Mac Codex, while distinct return arrows complete the round trip without label collisions.",
       "overlap": "PASS",
-      "sha256": "be4e1a6f6c56359fd4be98867b7e7d87a14e08af74c3587e2f17cae4d2462a23"
+      "sha256": "0bdac4ea643e2cca84ef831d85c62cf375c042ad56d3ee8186e9a92c7412e7bb"
     },
     "test-results/acceptance-artifacts/graphviz.png": {
       "arrows": "PASS",
       "balance": "PASS",
       "clipping": "PASS",
       "glyphs": "PASS",
-      "notes": "The 15-node dependency graph keeps Chinese labels legible, separates input, orchestration, Codex dependencies, validation, and audit, and routes 20 real dependencies with visible arrowheads and canvas margins.",
+      "notes": "The vertical 15-node dependency graph keeps Chinese labels legible in its original and 390px delivery views, preserves 20 real dependencies, and keeps all arrowheads and nodes within the canvas.",
       "overlap": "PASS",
-      "sha256": "51c822b9003b705402b515549ad7194da8741dba8f313e620277e1c20788c82e"
+      "sha256": "648d56cbd5fdde795ea72ccdf54a2a256f819ab2e9fde12c20119dd220c46eba"
     },
     "test-results/acceptance-artifacts/knowledge.png": {
       "arrows": "PASS",
@@ -59,9 +59,9 @@
       "balance": "PASS",
       "clipping": "PASS",
       "glyphs": "PASS",
-      "notes": "The Chinese title, legend, and unit plus Jan-May labels render clearly; the exact 12, 18, 27, 25, 41 sequence is proportioned honestly with separated points and unclipped axes. No arrows apply.",
+      "notes": "The Chinese title, legend, unit, source, footnote, and Jan-May labels render clearly; the exact 12, 18, 27, 25, 41 sequence uses an explicit zero baseline with separated points and unclipped axes. No arrows apply.",
       "overlap": "PASS",
-      "sha256": "8db77eae6434871863afb6491c64695243b6a2632d1f064d51d5a549557f5ef4"
+      "sha256": "5b435fff4bbb2313eb422913093827d09a1901bf4eecde0d195686ee07c24398"
     },
     "test-results/acceptance-artifacts/web-visual-desktop.png": {
       "arrows": "PASS",

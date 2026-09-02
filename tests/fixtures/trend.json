@@ -4,5 +4,8 @@
   "values": [12, 18, 27, 25, 41],
   "series_label": "完成任务",
   "unit": "项",
-  "chart_type": "line"
+  "chart_type": "line",
+  "axis": {"y_min": 0},
+  "source": "来源：本地验收数据",
+  "footnote": "口径：每月完成任务数"
 }

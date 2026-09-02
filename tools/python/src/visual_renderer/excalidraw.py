@@ -19,6 +19,8 @@ GRID = 20
 MIN_FONT_SIZE = 16
 MIN_CANVAS_MARGIN = 40
 TEXT_CONTAINER_PADDING = 8
+MAX_ARROW_LABEL_DISTANCE = 80
+MAX_ARROW_LABEL_DISPLACEMENT = 120
 
 
 @dataclass(frozen=True)
@@ -214,6 +216,33 @@ def _arrow_segments(element: dict) -> list[tuple[tuple[float, float], tuple[floa
     return list(zip(rotated, rotated[1:]))
 
 
+def _point_segment_distance(
+    point: tuple[float, float], start: tuple[float, float], end: tuple[float, float]
+) -> float:
+    dx, dy = end[0] - start[0], end[1] - start[1]
+    length_squared = dx * dx + dy * dy
+    if length_squared == 0:
+        return math.dist(point, start)
+    ratio = max(
+        0.0,
+        min(1.0, ((point[0] - start[0]) * dx + (point[1] - start[1]) * dy) / length_squared),
+    )
+    projection = (start[0] + ratio * dx, start[1] + ratio * dy)
+    return math.dist(point, projection)
+
+
+def _text_arrow_distance(text: dict, arrow: dict) -> float:
+    bounds = _raw_bounds(text)
+    if bounds is None:
+        return math.inf
+    center = ((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
+    segments = _arrow_segments(arrow)
+    return min(
+        (_point_segment_distance(center, start, end) for start, end in segments),
+        default=math.inf,
+    )
+
+
 def audit_scene(scene: dict) -> list[Issue]:
     """Return stable static findings for bounds, text, arrows, type size, and margins."""
     if not isinstance(scene, dict):
@@ -239,7 +268,16 @@ def audit_scene(scene: dict) -> list[Issue]:
         container_id = text.get("containerId")
         if container_id:
             container = by_id.get(str(container_id))
-            if (
+            if container is not None and container.get("type") == "arrow":
+                if _text_arrow_distance(text, container) > MAX_ARROW_LABEL_DISTANCE:
+                    issues.append(
+                        Issue(
+                            "arrow_label_detached",
+                            (str(container_id), text_id),
+                            f"arrow label must stay within {MAX_ARROW_LABEL_DISTANCE}px of its edge",
+                        )
+                    )
+            elif (
                 container is None
                 or not _valid_bounds(container)
                 or not _contains(
@@ -281,6 +319,14 @@ def audit_scene(scene: dict) -> list[Issue]:
                         "arrow crosses a text bounding box",
                     )
                 )
+                if not text.get("containerId") and _text_arrow_distance(text, arrow) <= MAX_ARROW_LABEL_DISTANCE:
+                    issues.append(
+                        Issue(
+                            "arrow_label_association",
+                            (str(arrow.get("id")), str(text.get("id"))),
+                            "near-edge label must retain its arrow association",
+                        )
+                    )
 
     app_state = scene.get("appState") if isinstance(scene.get("appState"), dict) else {}
     export_padding = app_state.get("exportPadding")
@@ -340,7 +386,58 @@ def _group_for_text(text: dict, by_id: dict[str, dict], elements: list[dict]) ->
     if not container_id or str(container_id) not in by_id:
         return [text]
     container = by_id[str(container_id)]
+    if container.get("type") == "arrow":
+        return [text]
     return [container] + [candidate for candidate in elements if candidate.get("containerId") == container_id]
+
+
+def _bind_arrow_label(text: dict, arrow: dict) -> None:
+    text["containerId"] = arrow.get("id")
+    bound = arrow.get("boundElements")
+    if not isinstance(bound, list):
+        bound = []
+        arrow["boundElements"] = bound
+    if not any(item.get("id") == text.get("id") for item in bound if isinstance(item, dict)):
+        bound.append({"id": text.get("id"), "type": "text"})
+
+
+def _place_arrow_label_near(text: dict, arrow: dict, elements: list[dict]) -> None:
+    arrow_bounds = _raw_bounds(arrow)
+    text_bounds = _raw_bounds(text)
+    if arrow_bounds is None or text_bounds is None:
+        raise ValueError("arrow label requires valid bounds")
+    width = text_bounds[2] - text_bounds[0]
+    height = text_bounds[3] - text_bounds[1]
+    center_x = (arrow_bounds[0] + arrow_bounds[2]) / 2
+    center_y = (arrow_bounds[1] + arrow_bounds[3]) / 2
+    candidates = [
+        (center_x - width / 2, arrow_bounds[1] - height - GRID),
+        (center_x - width / 2, arrow_bounds[3] + GRID),
+        (arrow_bounds[0] - width - GRID, center_y - height / 2),
+        (arrow_bounds[2] + GRID, center_y - height / 2),
+    ]
+    candidates.sort(key=lambda point: math.dist((float(text["x"]), float(text["y"])), point))
+    original = (float(text["x"]), float(text["y"]))
+    for x, y in candidates:
+        if math.dist(original, (x, y)) > MAX_ARROW_LABEL_DISPLACEMENT:
+            continue
+        candidate_bounds = (x, y, x + width, y + height)
+        if any(
+            other.get("id") not in {text.get("id"), arrow.get("id")}
+            and other.get("type") != "arrow"
+            and _valid_bounds(other)
+            and _overlap(candidate_bounds, _raw_bounds(other))  # type: ignore[arg-type]
+            for other in elements
+        ):
+            continue
+        if any(
+            _segment_intersects_bounds(start, end, candidate_bounds)
+            for start, end in _arrow_segments(arrow)
+        ):
+            continue
+        text["x"], text["y"] = x, y
+        return
+    raise ValueError(f"no nearby collision-free position found for arrow label: {text.get('id')}")
 
 
 def _combined_bounds(elements: Iterable[dict]) -> Bounds:
@@ -439,6 +536,12 @@ def fix_scene_layout(scene: dict, issues: list[Issue]) -> dict:
                 if text is not None and container is not None:
                     _expand_container(text, container)
                     changed = True
+            elif issue.code == "arrow_label_association" and len(issue.element_ids) == 2:
+                arrow = by_id.get(issue.element_ids[0])
+                text = by_id.get(issue.element_ids[1])
+                if arrow is not None and text is not None:
+                    _bind_arrow_label(text, arrow)
+                    changed = True
 
         moved: set[str] = set()
         for issue in current:
@@ -450,7 +553,11 @@ def fix_scene_layout(scene: dict, issues: list[Issue]) -> dict:
             if text_id and text_id not in moved:
                 text = by_id.get(text_id)
                 if text is not None and text.get("type") == "text":
-                    _move_text_to_free_grid(text, by_id, elements)
+                    arrow = by_id.get(str(text.get("containerId")))
+                    if arrow is not None and arrow.get("type") == "arrow":
+                        _place_arrow_label_near(text, arrow, elements)
+                    else:
+                        _move_text_to_free_grid(text, by_id, elements)
                     moved.add(text_id)
                     changed = True
 

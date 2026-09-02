@@ -5,6 +5,7 @@ import threading
 
 import pytest
 from PIL import Image
+from xml.etree import ElementTree
 
 from visual_renderer import diagrams
 from visual_renderer.diagrams import render_diagram
@@ -130,3 +131,28 @@ def test_mermaid_remote_reference_is_rejected_before_renderer_connection(
         server.shutdown()
         server.server_close()
         thread.join(timeout=2)
+
+
+@pytest.mark.parametrize(
+    ("language", "source"),
+    [("d2", "chinese-flow.d2"), ("graphviz", "chinese-dependencies.dot")],
+)
+def test_structured_delivery_is_legible_at_390px(language, source, tmp_path):
+    """Catch a wide IM diagram that scales its smallest type below mobile readability."""
+    output = render_diagram(language, FIXTURES / source, tmp_path / f"{language}.svg")
+    root = ElementTree.parse(output).getroot()
+    viewbox = [float(value) for value in root.attrib["viewBox"].split()]
+    width, height = viewbox[2], viewbox[3]
+    font_sizes = []
+    for element in root.iter():
+        if "font-size" in element.attrib:
+            font_sizes.append(float(element.attrib["font-size"]))
+        for declaration in element.attrib.get("style", "").split(";"):
+            if declaration.strip().startswith("font-size:"):
+                value = declaration.split(":", 1)[1].strip().removesuffix("px")
+                font_sizes.append(float(value))
+    scale = min(1.0, 390 / width)
+
+    assert width / height <= 1.8
+    assert font_sizes
+    assert min(font_sizes) * scale >= 11

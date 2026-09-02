@@ -27,7 +27,7 @@ Every listed output was deleted before its public render command, then decoded w
 
 - Exact SHA match: True
 - Overlap: PASS; clipping: PASS; glyphs: PASS; arrows: PASS; balance: PASS
-- Observation: Original 1473x274 D2 SVG was rendered locally in Chrome for inspection; request arrows run from user through Feishu and Hermes to Mac Codex, while distinct return arrows complete the round trip without label collisions.
+- Observation: The 452x829 vertical D2 SVG and its 390px delivery view retain readable Chinese; request arrows run from user through Feishu and Hermes to Mac Codex, while distinct return arrows complete the round trip without label collisions.
 
 ### `test-results/acceptance-artifacts/architecture-desktop.png`
 
@@ -45,19 +45,19 @@ Every listed output was deleted before its public render command, then decoded w
 
 - Exact SHA match: True
 - Overlap: PASS; clipping: PASS; glyphs: PASS; arrows: PASS; balance: PASS
-- Observation: The Chinese title, legend, and unit plus Jan-May labels render clearly; the exact 12, 18, 27, 25, 41 sequence is proportioned honestly with separated points and unclipped axes. No arrows apply.
+- Observation: The Chinese title, legend, unit, source, footnote, and Jan-May labels render clearly; the exact 12, 18, 27, 25, 41 sequence uses an explicit zero baseline with separated points and unclipped axes. No arrows apply.
 
 ### `test-results/acceptance-artifacts/graphviz.png`
 
 - Exact SHA match: True
 - Overlap: PASS; clipping: PASS; glyphs: PASS; arrows: PASS; balance: PASS
-- Observation: The 15-node dependency graph keeps Chinese labels legible, separates input, orchestration, Codex dependencies, validation, and audit, and routes 20 real dependencies with visible arrowheads and canvas margins.
+- Observation: The vertical 15-node dependency graph keeps Chinese labels legible in its original and 390px delivery views, preserves 20 real dependencies, and keeps all arrowheads and nodes within the canvas.
 
 ### `test-results/acceptance-artifacts/excalidraw.png`
 
 - Exact SHA match: True
 - Overlap: PASS; clipping: PASS; glyphs: PASS; arrows: PASS; balance: PASS
-- Observation: The fixed scene has distinct aligned nodes, two unambiguous arrows through whitespace, readable Chinese, visible export padding, and balanced supporting labels.
+- Observation: The fixed scene has distinct aligned nodes, two unambiguous arrows through whitespace, readable Chinese, visible export padding, and the 调用工具 label remains adjacent to and bound to its arrow.
 
 ### `test-results/acceptance-artifacts/web-visual-desktop.png`
 
@@ -88,5 +88,5 @@ Every listed output was deleted before its public render command, then decoded w
 
 ## Excalidraw bad → fixed evidence
 
-- Initial findings: 5 (arrow_text_intersection, canvas_margin, font_size, overlap, text_outside_shape).
+- Initial findings: 6 (arrow_label_association, arrow_text_intersection, canvas_margin, font_size, overlap, text_outside_shape).
 - Fixed findings: 0; deterministic fixed fixture match: True.

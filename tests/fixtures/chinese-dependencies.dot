@@ -1,7 +1,7 @@
 digraph agent_dependencies {
-  rankdir=LR;
-  graph [pad="0.3", nodesep="0.4", ranksep="0.7"];
-  node [shape=box, style="rounded,filled", fillcolor="#E8F0FE", color="#355C9A", fontname="PingFang SC"];
+  rankdir=TB;
+  graph [pad="0.3", nodesep="0.35", ranksep="0.55"];
+  node [shape=box, style="rounded,filled", fillcolor="#E8F0FE", color="#355C9A", fontname="PingFang SC", fontsize="24"];
   edge [color="#607D9D", fontname="PingFang SC"];
 
   user [label="用户请求"];

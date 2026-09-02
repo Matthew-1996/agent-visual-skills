@@ -129,3 +129,34 @@ The npm lock was regenerated from `package.json` in a clean temporary directory
 using only `https://registry.npmjs.org/`; all 470 resolved tarball URLs now use
 that host. npm reported 11 upstream dependency audit findings (5 moderate, 6
 high); no automatic or forced dependency mutation was authorized.
+
+### Final-review V1 closure evidence
+
+- Routing now links the shared selection/style contracts through the stable
+  install root and restores causal, journey, sequence, composition/pie, donut,
+  histogram, and scatter decisions. Unsupported chart forms use explicit Level
+  1 tables; the renderer still honestly supports only line and bar charts.
+- Chart configs reject non-finite values, default line/bar baselines to zero,
+  require a recorded rationale for non-zero line baselines, and render optional
+  source/footnote text. Exact trend values remain `12, 18, 27, 25, 41`.
+- Excalidraw audit now catches detached edge labels. The accepted fixture binds
+  `调用工具` to `arrow-agent-tool` and moves it from `y=560` to `y=218`;
+  bad-to-fixed output remains deterministic and audits clean.
+- The D2 round trip is vertical (`452x829`), while the unchanged 15-node/20-edge
+  Graphviz semantics render vertically (`754x984` viewBox). Their 390 px review
+  captures measured `390x716` and `390x509`; effective minimum type remained at
+  least 11 px. The focused C/D closure group passed **11 tests**.
+- Human review was repeated only for changed artifacts. Exact reviewed SHA-256:
+  flow `0bdac4ea643e2cca84ef831d85c62cf375c042ad56d3ee8186e9a92c7412e7bb`,
+  Graphviz PNG `648d56cbd5fdde795ea72ccdf54a2a256f819ab2e9fde12c20119dd220c46eba`,
+  trend `5b435fff4bbb2313eb422913093827d09a1901bf4eecde0d195686ee07c24398`,
+  Excalidraw `b52646a9540f0a8d8b81697a3be08b71a1abe4cd8b7a45d59dffce3074b2f3f7`.
+- Final acceptance passed **8/8**. The corrected full suite passed **75/75**;
+  six Skill validators passed **6/6**. A clean isolated public-registry
+  `npm ci --ignore-scripts` installed 434 packages and exited zero.
+- The secret-pattern scan returned no matches; dependency/cache/artifact paths
+  are ignored; all 470 lockfile tarballs resolve to `registry.npmjs.org`.
+  npm still reports 11 upstream audit findings (5 moderate, 6 high).
+- Canonical `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}` and `~/.codex`
+  were not touched. Deployment correctly remains `PARTIAL` pending controller
+  publication and canonical verification.

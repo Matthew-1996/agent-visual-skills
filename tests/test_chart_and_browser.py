@@ -140,3 +140,46 @@ def test_cli_chart_and_html_subcommands_render_pngs(tmp_path):
     assert main(["html", "--in", str(FIXTURES / "browser-smoke.html"), "--out", str(page)]) == 0
     assert Image.open(chart).format == "PNG"
     assert Image.open(page).size == (1440, 900)
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+def test_chart_rejects_non_finite_values_before_rendering(value, tmp_path):
+    """Catch NaN or infinity corrupting matplotlib limits and the delivered chart."""
+    config = json.loads((FIXTURES / "trend.json").read_text(encoding="utf-8"))
+    config["values"][2] = value
+    source = tmp_path / "non-finite.json"
+    source.write_text(json.dumps(config), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="finite"):
+        render_chart(source, tmp_path / "chart.png")
+
+
+def test_chart_contract_defaults_to_zero_and_accepts_optional_notes(tmp_path):
+    """Catch an implicit truncated baseline or lost source/footnote metadata."""
+    config = json.loads((FIXTURES / "trend.json").read_text(encoding="utf-8"))
+    config.pop("axis", None)
+    config["source"] = "Source: local fixture"
+    config["footnote"] = "Provisional count"
+    source = tmp_path / "notes.json"
+    source.write_text(json.dumps(config), encoding="utf-8")
+
+    loaded = charts._read_config(source)
+
+    assert loaded["axis_y_min"] == 0
+    assert loaded["source"] == "Source: local fixture"
+    assert loaded["footnote"] == "Provisional count"
+
+
+def test_line_non_zero_baseline_requires_recorded_rationale(tmp_path):
+    """Catch a line chart truncating its axis without an explicit reader-visible reason."""
+    config = json.loads((FIXTURES / "trend.json").read_text(encoding="utf-8"))
+    config["axis"] = {"y_min": 10}
+    source = tmp_path / "truncated.json"
+    source.write_text(json.dumps(config), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="rationale"):
+        charts._read_config(source)
+
+    config["axis"]["non_zero_baseline_rationale"] = "Operational threshold starts at 10 items"
+    source.write_text(json.dumps(config), encoding="utf-8")
+    assert charts._read_config(source)["axis_y_min"] == 10

@@ -47,7 +47,7 @@ Paths below are repository-relative and must be regenerated from the canonical c
 | Web Visual desktop/mobile and interaction | PASS | `test-results/acceptance-artifacts/web-visual-{desktop,mobile}.png` |
 | Excalidraw bad -> fixed QA | PASS | `test-results/acceptance-artifacts/excalidraw.png` |
 
-Worktree evidence at this draft point: **8/8 acceptance rows PASS; 54/54 automated tests PASS**. Controller must replace this sentence with fresh canonical evidence, including the canonical commit and final clean-status result.
+Worktree evidence at this draft point: **8/8 acceptance rows PASS; 75/75 automated tests PASS; 6/6 Skill validators PASS**. An isolated clean `npm ci --ignore-scripts` installed 434 packages from the public npm registry. Controller must replace this sentence with fresh canonical evidence, including the canonical commit and final clean-status result.
 
 ## Created Files
 
@@ -61,6 +61,7 @@ Worktree evidence at this draft point: **8/8 acceptance rows PASS; 54/54 automat
 ## Problems and Known Limits
 
 - No dependency failure is open in the worktree, but canonical bootstrap has not yet been exercised.
+- The clean npm audit reports 11 findings in the pinned upstream dependency graph (5 moderate, 6 high). No forced major-version mutation was applied; reassess these findings before canonical production promotion.
 - Browser-dependent captures must run sequentially on this Mac to avoid Chrome resource instability.
 - The public CLI accepts D2 SVG only and rejects D2 PNG before launching `d2`, preventing an unmanaged browser download.
 - The Excalidraw Skill source from `coleam00` lacked a confirmed repository license; this implementation copied no code or substantial text from it.

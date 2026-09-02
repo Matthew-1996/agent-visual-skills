@@ -52,6 +52,36 @@ def test_skill_docs_have_no_hosted_fallback_and_charts_are_png_only():
     assert "Do not use hosted rendering as a fallback." in router
     assert "hosted renderer to recover from failure" in diagram
     assert "remote rendering service" in reference
-    assert "tools/bin/render-diagram chart --config INPUT.json --out OUTPUT.png" in diagram
+    assert (
+        '"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" '
+        "chart --config INPUT.json --out OUTPUT.png"
+    ) in diagram
     assert "Charts render `.png` only." in diagram
     assert "| Chart config | `.json` | `chart --config` | `.png` |" in reference
+
+
+def test_router_matrix_covers_specialized_diagrams_and_honest_chart_fallbacks():
+    """Catch route omissions or claims that the narrow chart renderer supports more than line/bar."""
+    selection = Path("shared/visual-selection.md").read_text(encoding="utf-8")
+
+    for kind, route in {
+        "Causal chain": "Mermaid flowchart",
+        "User journey": "Mermaid journey",
+        "Interaction sequence": "Mermaid sequence",
+        "Composition / pie": "Mermaid pie",
+        "Donut": "Level 1 percentage table",
+        "Histogram": "Level 1 binned-frequency table",
+        "Scatter": "Level 1 paired-value table",
+    }.items():
+        row = next(line for line in selection.splitlines() if line.startswith(f"| {kind} |"))
+        assert f"| {route} |" in row
+    assert "The local chart JSON renderer supports only `line` and `bar`." in selection
+
+
+def test_router_explicitly_reads_shared_selection_and_style_from_stable_home():
+    """Catch installed routing that cannot find its normative selection/style contracts."""
+    router = Path("codex/skills/visual-communication/SKILL.md").read_text(encoding="utf-8")
+    stable = "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/"
+
+    assert f"{stable}visual-selection.md" in router
+    assert f"{stable}visual-style.md" in router

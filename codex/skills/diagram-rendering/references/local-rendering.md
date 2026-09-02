@@ -10,6 +10,12 @@ to the local renderer. Use the format-specific source extension and output:
 | Graphviz | `.dot`, `.gv` | `diagram --lang graphviz` | `.png` or `.svg` | Dense directed graphs |
 | Chart config | `.json` | `chart --config` | `.png` | Numeric trend or comparison |
 
+Chart JSON requires `title`, `labels`, finite numeric `values`, `series_label`,
+`unit`, and `chart_type` (`line` or `bar`). Optional `source` and `footnote` are
+printed below the plot. `axis.y_min` defaults to zero; bars must remain zero-
+based, and a line-chart non-zero value requires
+`axis.non_zero_baseline_rationale`, which is printed with the notes.
+
 If the command reports an unavailable local runtime, record the failure and
 return to an inline Level 1 form or ask for the environment to be prepared.
 Never replace it with a remote rendering service. For self-contained local HTML

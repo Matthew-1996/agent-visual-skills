@@ -41,6 +41,11 @@ def test_bad_scene_is_detected_then_fixed(tmp_path):
     assert fixed == fix_scene_layout(scene, issues)
     assert fixed == json.loads(FIXED_FIXTURE.read_text(encoding="utf-8"))
     assert audit_scene(fixed) == []
+    feedback = next(element for element in fixed["elements"] if element["id"] == "feedback")
+    assert feedback["containerId"] == "arrow-agent-tool"
+    assert abs(feedback["x"] - 700) <= 120
+    assert abs(feedback["y"] - 248) <= 120
+    assert feedback["y"] < 400
 
     target = tmp_path / "agent-model.png"
     render_excalidraw_dict(fixed, target)
@@ -202,4 +207,20 @@ def test_cli_exposes_excalidraw_audit_and_fix_modes(capsys, tmp_path):
     )
     assert json.loads(fixed_output.read_text(encoding="utf-8")) == fix_scene_layout(
         _load_bad_scene(), audit_scene(_load_bad_scene())
+    )
+
+
+def test_audit_rejects_a_detached_bound_arrow_label():
+    """Catch a fixer declaring success after separating a label from its arrow."""
+    scene = json.loads(FIXED_FIXTURE.read_text(encoding="utf-8"))
+    feedback = next(element for element in scene["elements"] if element["id"] == "feedback")
+    feedback["containerId"] = "arrow-agent-tool"
+    feedback["y"] = 560
+
+    issues = audit_scene(scene)
+
+    assert any(
+        issue.code == "arrow_label_detached"
+        and issue.element_ids == ("arrow-agent-tool", "feedback")
+        for issue in issues
     )
