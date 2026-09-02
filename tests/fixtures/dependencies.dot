@@ -1,0 +1,40 @@
+digraph dependencies {
+  rankdir=LR;
+  graph [pad="0.3", nodesep="0.45", ranksep="0.8"];
+  node [shape=box, style="rounded,filled", fillcolor="#E8F0FE", color="#355C9A"];
+  edge [color="#607D9D"];
+
+  source [label="Source files"];
+  parser [label="Parser"];
+  policy [label="Policy checks"];
+  mermaid [label="Mermaid adapter"];
+  d2 [label="D2 adapter"];
+  graphviz [label="Graphviz adapter"];
+  command [label="Local command"];
+  svg [label="SVG output"];
+  png [label="PNG output"];
+  validator [label="Output validator"];
+  cli [label="CLI command"];
+  launcher [label="Launcher script"];
+  test [label="Regression tests"];
+  report [label="Environment report"];
+  deliverable [label="Local deliverable"];
+
+  source -> parser;
+  parser -> policy;
+  policy -> mermaid;
+  policy -> d2;
+  policy -> graphviz;
+  mermaid -> command;
+  d2 -> command;
+  graphviz -> command;
+  command -> svg;
+  command -> png;
+  svg -> validator;
+  png -> validator;
+  validator -> cli;
+  cli -> launcher;
+  test -> cli;
+  report -> command;
+  launcher -> deliverable;
+}

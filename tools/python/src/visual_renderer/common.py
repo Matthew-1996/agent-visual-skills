@@ -41,12 +41,12 @@ def validate_output_path(path: Path, suffixes: Iterable[str]) -> Path:
     return path
 
 
-def run_checked(command: list[str]) -> None:
+def run_checked(command: list[str], *, environment: dict[str, str] | None = None) -> None:
     """Run a local command without a shell and give actionable failures."""
     if not command or any(not isinstance(part, str) or not part for part in command):
         raise ValueError("command must be a non-empty list of strings")
     try:
-        subprocess.run(command, check=True)
+        subprocess.run(command, check=True, env=environment)
     except FileNotFoundError as exc:
         raise RuntimeError(f"local renderer dependency is unavailable: {command[0]}") from exc
     except subprocess.CalledProcessError as exc:

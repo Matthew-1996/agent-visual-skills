@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from .common import validate_output_path, validate_readable_input
+from .diagrams import render_diagram
 
 
 OUTPUT_SUFFIXES = {".png", ".svg", ".html"}
@@ -53,11 +54,7 @@ def _validate_arguments(args: argparse.Namespace) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Parse and validate one local rendering request.
-
-    Format adapters are added independently; this stable boundary intentionally
-    accepts only local file paths and explicit output paths.
-    """
+    """Parse, validate, and execute one local rendering request."""
     parser = build_parser()
     args = parser.parse_args(argv)
     try:
@@ -65,4 +62,10 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as exc:
         print(f"visual-render: {exc}", file=sys.stderr)
         return 2
+    if args.command == "diagram":
+        try:
+            render_diagram(args.lang, Path(args.input_path), Path(args.output_path))
+        except (RuntimeError, ValueError) as exc:
+            print(f"visual-render: {exc}", file=sys.stderr)
+            return 1
     return 0
