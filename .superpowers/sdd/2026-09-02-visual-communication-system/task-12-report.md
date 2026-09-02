@@ -160,3 +160,39 @@ high); no automatic or forced dependency mutation was authorized.
 - Canonical `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}` and `~/.codex`
   were not touched. Deployment correctly remains `PARTIAL` pending controller
   publication and canonical verification.
+
+## Scoped final blocker fix round plan
+
+1. Replace the `mmdc` execution path with a repository-owned Node bridge that
+   loads the pinned local Mermaid browser bundle, launches only the resolved
+   local Chrome, blocks service workers/background networking, enables offline
+   mode, and aborts HTTP(S)/WS(S) requests at both browser and page boundaries.
+2. Add a real localhost sentinel using an entity/escaped URL that bypasses the
+   old regex, prove the current path RED, then require either a valid local
+   output with zero connections or a clear local rejection from the real bridge.
+3. Define zero-inclusive chart limits for non-negative, non-positive, and mixed
+   values, with negative-only and mixed regressions written and observed RED.
+4. Run focused GREEN regressions, one full pytest, Skill validation, secret and
+   clean-status audits, and only rerun acceptance if a reviewed artifact changes.
+
+### Scoped final blocker RED/GREEN evidence
+
+- RED: the entity-encoded localhost source bypassed the legacy scanner and the
+  renderer still attempted the monkeypatched `mmdc` path; negative-only and
+  mixed-sign tests also failed because no zero-inclusive limit policy existed.
+  The focused RED run was **3 failed** for these three missing behaviors.
+- Mermaid now runs through `tools/node/render-mermaid.mjs`, which loads the
+  repository-local pinned Mermaid bundle and `puppeteer-core`, launches the
+  resolved local Chrome, disables background networking/service workers,
+  applies CDP offline and HTTP(S)/WS(S) blocked URLs, and aborts network requests
+  at the page boundary. Python supplies only `LANG`, `PATH`, and `TMPDIR` rather
+  than forwarding token/key-bearing environment variables. Regex preflight is
+  retained only as defense in depth.
+- The real localhost/entity sentinel, negative-only, and mixed-sign regressions
+  passed **3/3** with zero server connections. The wider focused renderer group
+  passed **32/32**, and a real Mermaid PNG compatibility check passed **1/1**.
+- Chart limits now put zero at the bottom for non-negative data, zero at the top
+  for non-positive data, and include both extrema plus zero for mixed data.
+- The single full run for this scoped round passed **78/78**; six Skill
+  validators passed **6/6**. Per controller instruction, the unchanged semantic
+  acceptance matrix was not regenerated again in this round.

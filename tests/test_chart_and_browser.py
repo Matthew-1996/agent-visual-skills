@@ -183,3 +183,18 @@ def test_line_non_zero_baseline_requires_recorded_rationale(tmp_path):
     config["axis"]["non_zero_baseline_rationale"] = "Operational threshold starts at 10 items"
     source.write_text(json.dumps(config), encoding="utf-8")
     assert charts._read_config(source)["axis_y_min"] == 10
+
+
+def test_negative_only_chart_axis_includes_values_and_zero():
+    """Catch the zero-baseline policy clipping every negative value below the plot."""
+    lower, upper = charts._zero_inclusive_axis_limits([-9, -4, -2], 0)
+
+    assert lower <= -9
+    assert upper == 0
+
+
+def test_mixed_sign_chart_axis_includes_both_extremes_and_zero():
+    """Catch a one-sided baseline clipping either half of mixed-sign data."""
+    lower, upper = charts._zero_inclusive_axis_limits([-9, 4, 12], 0)
+
+    assert lower <= -9 < 0 < 12 <= upper

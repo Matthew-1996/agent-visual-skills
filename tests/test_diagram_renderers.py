@@ -33,6 +33,16 @@ def test_local_diagram_renderer(lang, source, tmp_path):
     assert out.stat().st_size > 1000
 
 
+def test_local_mermaid_bridge_preserves_png_contract(tmp_path):
+    """Catch the owned bridge replacing mmdc but silently dropping PNG delivery."""
+    output = render_diagram(
+        "mermaid", FIXTURES / "chinese-flow.mmd", tmp_path / "mermaid.png"
+    )
+
+    assert Image.open(output).format == "PNG"
+    assert min(Image.open(output).size) > 100
+
+
 @pytest.mark.parametrize(
     ("lang", "source"),
     [("mermaid", "chinese-flow.d2"), ("d2", "dependencies.dot"), ("graphviz", "chinese-flow.mmd")],
@@ -110,22 +120,60 @@ def test_mermaid_remote_reference_is_rejected_before_renderer_connection(
             f'flowchart LR\n  A[<img src="{remote}">] --> B\n',
             encoding="utf-8",
         )
-        fake_mmdc = tmp_path / "mmdc"
-        fake_mmdc.write_text(
-            "#!/usr/bin/env python3\n"
-            "import os, pathlib, sys, urllib.request\n"
-            "urllib.request.urlopen(os.environ['MERMAID_SENTINEL_URL'], timeout=2).read()\n"
-            "out = pathlib.Path(sys.argv[sys.argv.index('-o') + 1])\n"
-            "out.write_text('<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\"><text font-size=\"16\">x</text></svg>')\n",
-            encoding="utf-8",
+        launched: list[tuple[Path, Path]] = []
+        monkeypatch.setattr(
+            diagrams,
+            "_render_mermaid",
+            lambda input_path, output_path: launched.append((input_path, output_path)),
         )
-        fake_mmdc.chmod(0o755)
-        monkeypatch.setattr(diagrams, "_MMDC", fake_mmdc)
-        monkeypatch.setenv("MERMAID_SENTINEL_URL", remote)
 
         with pytest.raises(ValueError, match="remote reference"):
             render_diagram("mermaid", source, tmp_path / "remote.svg")
 
+        assert launched == []
+        assert SentinelHandler.requests == []
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
+def test_real_mermaid_bridge_blocks_entity_encoded_localhost_resource(
+    monkeypatch, tmp_path
+):
+    """Catch a return to mmdc or removal of the bridge's runtime network denial."""
+
+    class SentinelHandler(BaseHTTPRequestHandler):
+        requests: list[str] = []
+
+        def do_GET(self):  # noqa: N802 - stdlib handler contract
+            type(self).requests.append(self.path)
+            self.send_response(204)
+            self.end_headers()
+
+        def log_message(self, format, *args):  # noqa: A003 - stdlib handler contract
+            return
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), SentinelHandler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        source = tmp_path / "entity-remote.mmd"
+        source.write_text(
+            "%%{init: {'securityLevel':'loose','htmlLabels':true}}%%\n"
+            "flowchart LR\n"
+            f"  A[\"<img src='h&#116;tp://127.0.0.1:{server.server_port}/sentinel.svg'>\"] --> B[done]\n",
+            encoding="utf-8",
+        )
+        assert not diagrams._REMOTE_REFERENCE.search(source.read_text(encoding="utf-8"))
+        monkeypatch.setattr(diagrams, "_MMDC", tmp_path / "unavailable-mmdc", raising=False)
+
+        try:
+            output = render_diagram("mermaid", source, tmp_path / "entity-remote.svg")
+        except RuntimeError as exc:
+            assert "local-only Mermaid bridge" in str(exc)
+        else:
+            assert output.read_text(encoding="utf-8").lstrip().startswith("<svg")
         assert SentinelHandler.requests == []
     finally:
         server.shutdown()

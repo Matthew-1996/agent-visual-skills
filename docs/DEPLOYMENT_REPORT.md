@@ -47,7 +47,7 @@ Paths below are repository-relative and must be regenerated from the canonical c
 | Web Visual desktop/mobile and interaction | PASS | `test-results/acceptance-artifacts/web-visual-{desktop,mobile}.png` |
 | Excalidraw bad -> fixed QA | PASS | `test-results/acceptance-artifacts/excalidraw.png` |
 
-Worktree evidence at this draft point: **8/8 acceptance rows PASS; 75/75 automated tests PASS; 6/6 Skill validators PASS**. An isolated clean `npm ci --ignore-scripts` installed 434 packages from the public npm registry. Controller must replace this sentence with fresh canonical evidence, including the canonical commit and final clean-status result.
+Worktree evidence at this draft point: **8/8 acceptance rows PASS; 78/78 automated tests PASS; 6/6 Skill validators PASS**. An isolated clean `npm ci --ignore-scripts` installed 434 packages from the public npm registry. Controller must replace this sentence with fresh canonical evidence, including the canonical commit and final clean-status result.
 
 ## Created Files
 

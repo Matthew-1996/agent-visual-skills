@@ -19,8 +19,7 @@ _INPUT_SUFFIXES = {
 }
 _OUTPUT_SUFFIXES = {".svg", ".png"}
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
-_MMDC = _REPOSITORY_ROOT / "tools" / "node" / "node_modules" / ".bin" / "mmdc"
-_PUPPETEER_CONFIG = _REPOSITORY_ROOT / "tools" / "node" / "puppeteer-config.json"
+_MERMAID_BRIDGE = _REPOSITORY_ROOT / "tools" / "node" / "render-mermaid.mjs"
 _REMOTE_REFERENCE = re.compile(r"(?i)(?:https?|wss?):(?:/{2}|\\/{2})")
 
 
@@ -36,20 +35,27 @@ def _normalise_svg(path: Path) -> None:
 
 
 def _render_mermaid(input_path: Path, output_path: Path) -> None:
-    environment = os.environ.copy()
-    environment["PUPPETEER_EXECUTABLE_PATH"] = str(resolve_chrome())
-    run_checked(
-        [
-            str(_MMDC),
-            "-i",
-            str(input_path),
-            "-o",
-            str(output_path),
-            "--puppeteerConfigFile",
-            str(_PUPPETEER_CONFIG),
-        ],
-        environment=environment,
-    )
+    environment = {
+        key: value
+        for key in ("LANG", "PATH", "TMPDIR")
+        if (value := os.environ.get(key))
+    }
+    try:
+        run_checked(
+            [
+                "node",
+                str(_MERMAID_BRIDGE),
+                "--input",
+                str(input_path),
+                "--output",
+                str(output_path),
+                "--chrome",
+                str(resolve_chrome()),
+            ],
+            environment=environment,
+        )
+    except RuntimeError as exc:
+        raise RuntimeError("local-only Mermaid bridge rejected or failed the render") from exc
 
 
 def _render_d2(input_path: Path, output_path: Path) -> None:

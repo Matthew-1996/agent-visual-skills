@@ -1,5 +1,4 @@
 from pathlib import Path
-import json
 
 import pytest
 
@@ -57,29 +56,15 @@ def test_mermaid_uses_shared_browser_resolution(monkeypatch, tmp_path):
 
     diagrams._render_mermaid(source, output)
 
-    assert captured["command"][0] == str(diagrams._MMDC)
-    assert captured["environment"]["PUPPETEER_EXECUTABLE_PATH"] == str(chromium)
-
-
-def test_mermaid_launch_uses_repository_hardened_browser_configuration(monkeypatch, tmp_path):
-    """Catch mmdc launching Chrome without background-network hardening."""
-    source = tmp_path / "diagram.mmd"
-    output = tmp_path / "diagram.svg"
-    source.write_text("flowchart LR\n  A --> B\n", encoding="utf-8")
-    captured = {}
-    monkeypatch.setattr(diagrams, "resolve_chrome", lambda: executable(tmp_path / "chromium"))
-    monkeypatch.setattr(
-        diagrams,
-        "run_checked",
-        lambda command, *, environment: captured.update(command=command, environment=environment),
-    )
-
-    diagrams._render_mermaid(source, output)
-
-    config_flag = captured["command"].index("--puppeteerConfigFile")
-    config_path = Path(captured["command"][config_flag + 1])
-    config = json.loads(config_path.read_text(encoding="utf-8"))
-    assert config_path == diagrams._PUPPETEER_CONFIG
-    assert "--disable-background-networking" in config["args"]
-    assert "--disable-component-update" in config["args"]
-    assert "--no-first-run" in config["args"]
+    assert captured["command"] == [
+        "node",
+        str(diagrams._MERMAID_BRIDGE),
+        "--input",
+        str(source),
+        "--output",
+        str(output),
+        "--chrome",
+        str(chromium),
+    ]
+    assert set(captured["environment"]) <= {"LANG", "PATH", "TMPDIR"}
+    assert not any("TOKEN" in key or "KEY" in key for key in captured["environment"])

@@ -90,6 +90,20 @@ def _read_config(config_path: Path) -> dict[str, Any]:
     return config
 
 
+def _zero_inclusive_axis_limits(
+    values: list[float], requested_y_min: float
+) -> tuple[float | None, float | None]:
+    """Return limits that keep all data and zero visible without clipping."""
+    minimum, maximum = min(values), max(values)
+    span = max(maximum - minimum, abs(minimum), abs(maximum), 1)
+    padding = span * 0.05
+    if minimum >= 0:
+        return requested_y_min, None
+    if maximum <= 0:
+        return minimum - padding, 0
+    return minimum - padding, maximum + padding
+
+
 def render_chart(config_path: Path, output_path: Path) -> Path:
     """Render a line or bar chart from a local JSON config into a PNG."""
     config = _read_config(config_path)
@@ -115,7 +129,8 @@ def render_chart(config_path: Path, output_path: Path) -> Path:
     axis.set_title(config["title"], fontsize=20, pad=18)
     axis.set_ylabel(f"单位：{config['unit']}", fontsize=12)
     axis.set_xticks(positions, labels)
-    axis.set_ylim(bottom=config["axis_y_min"])
+    lower, upper = _zero_inclusive_axis_limits(values, config["axis_y_min"])
+    axis.set_ylim(bottom=lower, top=upper)
     axis.grid(axis="y", alpha=0.25)
     axis.set_axisbelow(True)
     axis.legend(frameon=False)
