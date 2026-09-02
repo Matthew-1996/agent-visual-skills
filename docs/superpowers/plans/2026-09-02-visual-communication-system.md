@@ -495,7 +495,7 @@ The router defaults to prose, selects Level 1/2/3 by lowest sufficient cognitive
 
 - [ ] **Step 4: Validate every Skill with Codex's validator**
 
-Run: `for skill in codex/skills/*; do python3 /Users/bytedance/.codex/skills/.system/skill-creator/scripts/quick_validate.py "$skill"; done && uv run --with pytest --with pyyaml pytest tests/test_skills.py -q`
+Run: `for skill in codex/skills/*; do python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_validate.py" "$skill"; done && uv run --with pytest --with pyyaml pytest tests/test_skills.py -q`
 
 Expected: six validator successes and all Skill tests PASS.
 

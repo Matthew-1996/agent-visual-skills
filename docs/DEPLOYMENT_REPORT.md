@@ -4,7 +4,7 @@ Date: 2026-09-03
 
 ## Overall Status
 
-**PASS** - commit `1d19c3a51a7ecab8d7d40ac0f0b058660061e10d` is installed at `/Users/bytedance/agent-visual-skills`. Repository-local dependencies and the Excalidraw bundle are built, six Codex discovery links resolve into that clone, the canonical eight-scenario acceptance suite passes 8/8, and the canonical automated suite passes 78/78.
+**PASS** - commit `1d19c3a51a7ecab8d7d40ac0f0b058660061e10d` was installed at `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}`. Repository-local dependencies and the Excalidraw bundle were built, six Codex discovery links resolved into that clone, the canonical eight-scenario acceptance suite passed 8/8, and the canonical automated suite passed 78/78.
 
 ## Installed Skills
 
@@ -55,8 +55,8 @@ Canonical evidence: **8/8 acceptance rows PASS; 78/78 automated tests PASS; 6/6 
 - Shared principles: `shared/visual-principles.md`, `shared/visual-selection.md`, `shared/privacy-rendering-policy.md`, `shared/visual-style.md`
 - Hermes guide: `hermes/MIGRATION.md`
 - Acceptance evidence: `test-results/acceptance.json`, `test-results/ACCEPTANCE.md`
-- Canonical repository: `/Users/bytedance/agent-visual-skills`
-- Codex discovery links: `/Users/bytedance/.codex/skills/{visual-communication,excalidraw-diagram,diagram-rendering,architecture-diagram,infographic,web-visual}`
+- Canonical repository: `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}`
+- Codex discovery links: `${CODEX_HOME:-$HOME/.codex}/skills/{visual-communication,excalidraw-diagram,diagram-rendering,architecture-diagram,infographic,web-visual}`
 
 ## Problems and Known Limits
 
