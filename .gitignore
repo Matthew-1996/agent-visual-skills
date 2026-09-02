@@ -2,9 +2,12 @@
 .superpowers/
 .venv/
 node_modules/
+tools/node/node_modules/
+tools/python/.venv/
 .playwright/
 __pycache__/
 .pytest_cache/
+test-results/
 test-results/tmp/
 .env
 .env.*
