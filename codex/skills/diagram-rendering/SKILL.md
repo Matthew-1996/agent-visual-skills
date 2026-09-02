@@ -20,10 +20,10 @@ Choose the smallest fitting format:
 Run exactly one matching local command:
 
 ```bash
-tools/bin/render-diagram diagram --lang mermaid --in INPUT.mmd --out OUTPUT.png
-tools/bin/render-diagram diagram --lang d2 --in INPUT.d2 --out OUTPUT.svg
-tools/bin/render-diagram diagram --lang graphviz --in INPUT.dot --out OUTPUT.png
-tools/bin/render-diagram chart --config INPUT.json --out OUTPUT.png
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" diagram --lang mermaid --in INPUT.mmd --out OUTPUT.png
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" diagram --lang d2 --in INPUT.d2 --out OUTPUT.svg
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" diagram --lang graphviz --in INPUT.dot --out OUTPUT.png
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" chart --config INPUT.json --out OUTPUT.png
 ```
 
 Mermaid and Graphviz may use `.png` or `.svg`; D2 accepts `.svg` only. The public
@@ -36,5 +36,5 @@ legibility before delivery. Do not install dependencies or use a hosted renderer
 Route whiteboard-like spatial reasoning to `excalidraw-diagram`; architecture
 presentations to `architecture-diagram`; polished static explainers to
 `infographic`; and responsive, general reports or dashboards to `web-visual`.
-Read [local rendering details](references/local-rendering.md) only when a
+Read `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/codex/skills/diagram-rendering/references/local-rendering.md` only when a
 format or validation detail is needed.

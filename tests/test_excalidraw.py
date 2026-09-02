@@ -173,3 +173,33 @@ def test_cli_excalidraw_subcommand_exports_a_real_png(tmp_path):
     with Image.open(output) as image:
         assert image.format == "PNG"
         assert image.size[0] >= 900
+
+
+def test_cli_exposes_excalidraw_audit_and_fix_modes(capsys, tmp_path):
+    """Catch the documented render-inspect-fix loop being unavailable outside Python imports."""
+    fixed_output = tmp_path / "fixed.excalidraw"
+
+    assert main(["excalidraw", "--mode", "audit", "--in", str(FIXED_FIXTURE)]) == 0
+    assert json.loads(capsys.readouterr().out) == {"issues": []}
+
+    assert main(["excalidraw", "--mode", "audit", "--in", str(FIXTURE)]) == 3
+    reported = json.loads(capsys.readouterr().out)
+    assert "overlap" in {issue["code"] for issue in reported["issues"]}
+
+    assert (
+        main(
+            [
+                "excalidraw",
+                "--mode",
+                "fix",
+                "--in",
+                str(FIXTURE),
+                "--out",
+                str(fixed_output),
+            ]
+        )
+        == 0
+    )
+    assert json.loads(fixed_output.read_text(encoding="utf-8")) == fix_scene_layout(
+        _load_bad_scene(), audit_scene(_load_bad_scene())
+    )

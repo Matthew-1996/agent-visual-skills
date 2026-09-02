@@ -13,9 +13,13 @@ quota.
    interaction materially lowers the reader's understanding cost. If not,
    answer in prose.
 2. Classify the content before selecting or producing a rendered output. Read
-   [the shared privacy policy](../../../shared/privacy-rendering-policy.md);
+   `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/privacy-rendering-policy.md`;
    uncertain content is `UNKNOWN` and remains local-only.
-3. Choose the lowest sufficient level and exactly one primary representation:
+3. Read `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/visual-selection.md`
+   for the routing matrix and
+   `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/shared/visual-style.md` for
+   delivery constraints.
+4. Choose the lowest sufficient level and exactly one primary representation:
    - Level 1: inline prose, Markdown table, tree, timeline, or Unicode flow
      for small or linear structure. No renderer.
    - Level 2: local diagram or chart when a visual canvas clarifies relations,
@@ -23,11 +27,12 @@ quota.
      `excalidraw-diagram` for whiteboard-like spatial reasoning.
    - Level 3: `architecture-diagram`, `infographic`, or `web-visual` only for
      an architecture view, polished explanatory summary, or needed interaction.
-4. Select one specialist. Use overview plus detail only when the overview
+5. Select one specialist. Use overview plus detail only when the overview
    answers a different question from a necessary detailed view; label both and
    avoid repeating the same relationships.
-5. Retain editable source for rendered output and inspect it before delivery.
-   Read [examples](references/examples.md) only when choosing a summary form.
+6. Retain editable source for rendered output and inspect it before delivery.
+   Read `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/codex/skills/visual-communication/references/examples.md`
+   only when choosing a summary form.
 
 Do not use hosted rendering as a fallback. The shared policy and selection
 rules are authoritative; this Skill only routes to them.

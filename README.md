@@ -20,10 +20,10 @@ Codex discovery uses one symlink per Skill under `${CODEX_HOME:-$HOME/.codex}/sk
 The canonical location is `${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}`. From that repository:
 
 ```bash
-bash tools/scripts/bootstrap-macos.sh
-npm run build --prefix tools/node
-bash tools/scripts/check-environment.sh
-bash tools/scripts/install-codex.sh
+bash "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/scripts/bootstrap-macos.sh"
+npm run build --prefix "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/node"
+bash "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/scripts/check-environment.sh"
+bash "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/scripts/install-codex.sh"
 ```
 
 The bootstrap installs Graphviz and D2 through Homebrew only when absent, installs npm packages under `tools/node`, and synchronizes the Python environment under `tools/python/.venv`. The explicit npm build creates the local Excalidraw bridge. Both steps reuse an installed Google Chrome and do not download a Playwright or Puppeteer browser.
@@ -38,15 +38,17 @@ done
 
 ## Rendering
 
-`tools/bin/render-diagram` is the stable local-only entry point. It validates inputs, subprocess exits, output signatures, and minimum dimensions; it never installs dependencies or contacts a hosted renderer.
+`${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram` is the stable local-only entry point. It validates inputs, subprocess exits, output signatures, and minimum dimensions; it never installs dependencies or contacts a hosted renderer.
 
 ```bash
-tools/bin/render-diagram diagram --lang mermaid --in input.mmd --out output.png
-tools/bin/render-diagram diagram --lang d2 --in input.d2 --out output.svg
-tools/bin/render-diagram diagram --lang graphviz --in input.dot --out output.png
-tools/bin/render-diagram chart --config data.json --out chart.png
-tools/bin/render-diagram html --in report.html --out report.png --width 1440 --height 1100
-tools/bin/render-diagram excalidraw --in scene.excalidraw --out preview.png
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" diagram --lang mermaid --in input.mmd --out output.png
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" diagram --lang d2 --in input.d2 --out output.svg
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" diagram --lang graphviz --in input.dot --out output.png
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" chart --config data.json --out chart.png
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" html --in report.html --out report.png --width 1440 --height 1100
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" excalidraw --mode audit --in scene.excalidraw
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" excalidraw --mode fix --in scene.excalidraw --out fixed.excalidraw
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" excalidraw --mode render --in fixed.excalidraw --out preview.png
 ```
 
 Use the lowest sufficient level:
@@ -68,9 +70,9 @@ HTML outputs are self-contained, browser requests are blocked during inspection,
 Run the full working-tree verification sequentially because repeated parallel Chrome launches are unstable on some Macs:
 
 ```bash
-bash tools/scripts/check-environment.sh
-bash tests/run-acceptance.sh
-uv run --project tools/python --with pytest --with pyyaml pytest tests -q
+bash "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/scripts/check-environment.sh"
+bash "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tests/run-acceptance.sh"
+uv run --project "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/python" --with pytest --with pyyaml pytest "${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tests" -q
 ```
 
 The acceptance matrix regenerates and validates eight scenarios: knowledge map, Feishu -> Hermes -> Codex round trip, architecture, Jan-May trend, 15-node Graphviz dependency graph, cross-renderer Chinese output, responsive Web Visual, and Excalidraw bad -> fixed QA. Results are written to `test-results/acceptance.json` and `test-results/ACCEPTANCE.md`; generated artifacts are intentionally ignored by Git.
@@ -102,7 +104,7 @@ Read `hermes/MIGRATION.md` before moving the repository to Ubuntu. It classifies
 
 ## Known limits
 
-- macOS bootstrap requires Homebrew, uv, Node/npm, and an installed Google Chrome; it only installs missing Graphviz and D2 system packages.
+- macOS bootstrap requires Homebrew, uv, Node/npm, and a resolved local Chrome/Chromium (`CHROMIUM_BIN` may override discovery); it only installs missing Graphviz and D2 system packages.
 - Ubuntu/Hermes needs the documented replacement bootstrap and browser-path adaptation.
 - D2 accepts SVG only through the public CLI. A D2 PNG request is rejected before `d2` launches, so it cannot trigger a managed-browser download.
 - Chrome-dependent captures run sequentially for stability.

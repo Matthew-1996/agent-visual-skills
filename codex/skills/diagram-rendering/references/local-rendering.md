@@ -1,6 +1,6 @@
 # Local rendering details
 
-`tools/bin/render-diagram` validates readable local source before dispatching
+`${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram` validates readable local source before dispatching
 to the local renderer. Use the format-specific source extension and output:
 
 | Format | Source extension | Command selector | Output | Best for |
@@ -16,7 +16,7 @@ Never replace it with a remote rendering service. For self-contained local HTML
 screenshots, the separate command is:
 
 ```bash
-tools/bin/render-diagram html --in INPUT.html --out OUTPUT.png --width 1440 --height 900
+"${AGENT_VISUAL_HOME:-$HOME/agent-visual-skills}/tools/bin/render-diagram" html --in INPUT.html --out OUTPUT.png --width 1440 --height 900
 ```
 
 That command is for the dedicated HTML-based specialist Skills, not a default

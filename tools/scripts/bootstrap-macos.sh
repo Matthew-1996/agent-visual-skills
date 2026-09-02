@@ -3,7 +3,7 @@ set -euo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd -- "$script_dir/../.." && pwd)"
-chrome="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+source "$script_dir/resolve-browser.sh"
 
 require_command() {
   local command_name="$1"
@@ -17,8 +17,8 @@ require_command brew
 require_command npm
 require_command uv
 
-if [[ ! -x "$chrome" ]]; then
-  printf 'bootstrap-macos: Google Chrome is required at %s. Install Chrome before continuing.\n' "$chrome" >&2
+if ! chrome="$(resolve_local_browser)"; then
+  printf 'bootstrap-macos: a local Chrome/Chromium executable is required.\n' >&2
   exit 127
 fi
 
@@ -31,7 +31,7 @@ if ! command -v d2 >/dev/null 2>&1; then
 fi
 
 # Mermaid uses the installed Chrome. playwright-core never downloads browsers.
-PUPPETEER_SKIP_DOWNLOAD=true PUPPETEER_EXECUTABLE_PATH="$chrome" npm install --prefix "$repo_root/tools/node"
+PUPPETEER_SKIP_DOWNLOAD=true PUPPETEER_EXECUTABLE_PATH="$chrome" npm install --prefix "$repo_root/tools/node" --registry=https://registry.npmjs.org/
 uv sync --project "$repo_root/tools/python"
 
 printf 'bootstrap-macos: local rendering dependencies are ready.\n'

@@ -116,3 +116,16 @@ HTTP/WebSocket/popup/service-worker evidence, Mermaid rejection before the fake
 renderer starts, D2 SVG-only enforcement in the exported Python API, hardened
 Chrome launch arguments for both Playwright and mmdc, and all prior diagram,
 browser, browser-resolution, and Excalidraw regressions.
+
+### Portability and dependency RED/GREEN evidence
+
+Seven focused tests first failed for the intended missing contracts: no public
+Excalidraw audit/fix mode, no platform/runtime inventory, ignored
+`CHROMIUM_BIN`, fixed Chrome in the bootstrap, internal `bnpm.byted.org`
+lockfile URLs, cwd-relative installed Skill paths, and distro-ambiguous Ubuntu
+Node installation. After the fixes the same group passed **7/7**.
+
+The npm lock was regenerated from `package.json` in a clean temporary directory
+using only `https://registry.npmjs.org/`; all 470 resolved tarball URLs now use
+that host. npm reported 11 upstream dependency audit findings (5 moderate, 6
+high); no automatic or forced dependency mutation was authorized.

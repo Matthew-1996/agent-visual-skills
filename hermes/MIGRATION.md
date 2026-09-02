@@ -82,16 +82,26 @@ Hermes integration mechanisms. Re-express only the portable behavior.
 
 ## Ubuntu replacement for the macOS bootstrap
 
-`bootstrap-macos.sh` is intentionally not portable: it invokes Homebrew and
-requires `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`.
+`bootstrap-macos.sh` is intentionally not portable because it invokes Homebrew.
 Run this replacement from an Ubuntu machine with `sudo` access instead.
-System packages provide Graphviz, Chromium, Node/npm, and Noto CJK; D2 and uv
-use their maintained upstream installers, and all JavaScript/Python packages
+System packages provide Graphviz, Chromium, and Noto CJK. Node 22 LTS is
+installed from a dedicated signed NodeSource repository and held after its
+major version is verified; distro-default `nodejs`/`npm` are not accepted. D2
+and uv use their maintained upstream installers, and JavaScript/Python packages
 remain repository-local.
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y graphviz chromium nodejs npm curl ca-certificates fonts-noto-cjk
+sudo apt-get install -y graphviz chromium curl ca-certificates gnupg fonts-noto-cjk
+sudo install -d -m 0755 /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor --yes -o /etc/apt/keyrings/nodesource.gpg
+NODE_MAJOR=22
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list >/dev/null
+sudo apt-get update
+sudo apt-get install -y nodejs
+node --version | grep -E '^v22\\.'
+npm --version
+sudo apt-mark hold nodejs
 curl -fsSL https://d2lang.com/install.sh | sudo sh -s -- --prefix /usr/local
 curl -LsSf https://astral.sh/uv/install.sh | sh
 export PATH="${HOME}/.local/bin:${PATH}"
