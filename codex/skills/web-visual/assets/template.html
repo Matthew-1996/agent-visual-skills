@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>本地 Web Visual 模板</title>
+<style>
+  :root { color-scheme:dark; font-family:system-ui,-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif; background:#070b14; color:#edf2f7; }
+  *{box-sizing:border-box} body{margin:0;padding:clamp(14px,3vw,36px);background:radial-gradient(circle at 80% 0,#14213d 0,transparent 34%),#070b14} main{width:min(1180px,100%);margin:auto}.top{display:flex;justify-content:space-between;gap:20px;align-items:end}.eyebrow{color:#72e2c4;font-size:12px;font-weight:800;letter-spacing:.14em}h1{margin:8px 0 0;font-size:clamp(30px,5vw,58px);line-height:1.04;letter-spacing:-.035em}.updated{color:#8190a8;font-size:12px}.verdict{margin:26px 0 16px;padding:22px;border:1px solid #2a3c58;border-radius:18px;background:#111827cc}.verdict strong{color:#72e2c4}.controls{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}button{min-height:42px;padding:0 16px;border:1px solid #31445f;border-radius:999px;background:#111827;color:#cdd7e5;font:inherit;font-weight:700;cursor:pointer}button[aria-pressed="true"]{border-color:#72e2c4;background:#153d38;color:#d8fff4}button:focus-visible{outline:3px solid #72e2c4;outline-offset:2px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.card{min-width:0;padding:18px;border:1px solid #24344d;border-radius:16px;background:#0d1422}.card h2{margin:0 0 10px;font-size:16px}.metric{font-size:32px;font-weight:850;color:#fff}.muted{color:#90a0b7;line-height:1.6}.diagram{grid-column:span 2}svg{display:block;width:100%;height:auto}.card[hidden]{display:none}.foot{margin-top:16px;color:#728097;font-size:12px}@media(max-width:680px){.top{display:block}.updated{margin-top:10px}.grid{grid-template-columns:1fr}.diagram{grid-column:auto}}
+</style>
+<main>
+  <header class="top"><div><div class="eyebrow">LOCAL DECISION REPORT</div><h1>把结论放在首屏</h1></div><div class="updated">更新于：本地时间</div></header>
+  <section class="verdict"><strong>结论</strong>：一句话说明当前状态、主要原因与建议行动。<div class="controls" aria-label="报告视角"><button type="button" aria-pressed="true" data-lens="all">总览</button><button type="button" aria-pressed="false" data-lens="risk">只看风险</button></div><div class="muted" data-lens-summary aria-live="polite">显示全部证据。</div></section>
+  <section class="grid"><article class="card" data-topic="result"><h2>结果指标</h2><div class="metric">84%</div><p class="muted">写清单位、口径与目标差距。</p></article><article class="card" data-topic="risk"><h2>主要风险</h2><div class="metric">2</div><p class="muted">说明影响和触发条件。</p></article><article class="card" data-topic="action"><h2>下一步</h2><div class="metric">3 项</div><p class="muted">明确负责人和检查点。</p></article><article class="card diagram" data-topic="result"><h2>证据关系</h2><svg viewBox="0 0 720 250" role="img" aria-label="从证据到行动的关系"><defs><marker id="a" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0L8 3L0 6z" fill="#72e2c4"/></marker></defs><rect width="720" height="250" rx="14" fill="#09101c"/><path d="M210 125H330M390 125H510" stroke="#72e2c4" stroke-width="3" marker-end="url(#a)"/><g text-anchor="middle"><circle cx="150" cy="125" r="64" fill="#172338" stroke="#395170"/><text x="150" y="131" fill="#fff" font-size="18" font-weight="800">证据</text><circle cx="360" cy="125" r="64" fill="#153d38" stroke="#72e2c4"/><text x="360" y="131" fill="#fff" font-size="18" font-weight="800">判断</text><circle cx="570" cy="125" r="64" fill="#172338" stroke="#395170"/><text x="570" y="131" fill="#fff" font-size="18" font-weight="800">行动</text></g></svg></article><article class="card" data-topic="risk"><h2>风险边界</h2><p class="muted">记录假设、限制和可逆路径。</p></article></section>
+  <footer class="foot">离线单文件 · 内联 CSS/SVG/JS · 无远程请求</footer>
+</main>
+<script>
+  const buttons = [...document.querySelectorAll('[data-lens]')];
+  const cards = [...document.querySelectorAll('[data-topic]')];
+  const summary = document.querySelector('[data-lens-summary]');
+  buttons.forEach(button => button.addEventListener('click', () => {
+    const lens = button.dataset.lens;
+    buttons.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+    cards.forEach(card => card.hidden = lens !== 'all' && card.dataset.topic !== lens);
+    summary.textContent = lens === 'all' ? '显示全部证据。' : '已聚焦风险证据。';
+  }));
+</script>
