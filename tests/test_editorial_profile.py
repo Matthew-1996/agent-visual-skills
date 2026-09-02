@@ -2,6 +2,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 import re
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 TOKENS = {
@@ -20,6 +22,31 @@ HTML_ARTIFACTS = (
     "codex/skills/infographic/assets/template.html",
     "codex/skills/web-visual/assets/template.html",
 )
+ACCENT_TINT = "rgba(235,108,54,.08)"
+COLOR_FUNCTION = re.compile(r"\b(?:rgba?|hsla?)\([^)]*\)", re.I)
+CSS_COLOR_DECLARATION = re.compile(
+    r"(?<![\w-])(?:color|background(?:-color)?|border(?:-color)?|outline(?:-color)?|"
+    r"fill|stroke|box-shadow|text-shadow)\s*:\s*([^;{}\"']+)",
+    re.I,
+)
+SVG_NAMED_COLOR = re.compile(r"\b(?:fill|stroke|color)\s*=\s*[\"']([a-zA-Z]+)[\"']", re.I)
+CSS_NON_COLOR_WORDS = {"none", "solid", "px"}
+SVG_NON_COLOR_WORDS = {"none", "currentcolor"}
+
+
+def _assert_only_governed_colors(markup):
+    assert set(re.findall(r"#[0-9a-fA-F]{3,8}\b", markup)) <= TOKENS
+    assert f"--accent-tint:{ACCENT_TINT}" in markup
+    assert set(COLOR_FUNCTION.findall(markup)) <= {ACCENT_TINT}
+
+    for value in CSS_COLOR_DECLARATION.findall(markup):
+        without_tokens = re.sub(r"var\([^)]*\)", "", value)
+        without_functions = COLOR_FUNCTION.sub("", without_tokens)
+        names = set(re.findall(r"\b[a-zA-Z]+\b", without_functions.lower()))
+        assert names <= CSS_NON_COLOR_WORDS
+
+    names = {name.lower() for name in SVG_NAMED_COLOR.findall(markup)}
+    assert names <= SVG_NON_COLOR_WORDS
 
 
 class DiagramMarkup(HTMLParser):
@@ -98,9 +125,14 @@ def test_html_artifacts_use_only_semantic_palette_tokens_and_accent_tint():
         markup = (ROOT / relative).read_text(encoding="utf-8")
         assert "#f5f5f5" in markup
         assert "#eb6c36" in markup
-        assert set(re.findall(r"#[0-9a-fA-F]{3,8}\b", markup)) <= TOKENS
-        assert "white" not in markup.lower()
-        assert "--accent-tint:rgba(235,108,54,.08)" in markup
-        assert set(re.findall(r"rgba\([^)]*\)", markup)) <= {"rgba(235,108,54,.08)"}
+        _assert_only_governed_colors(markup)
         assert "color-scheme: dark" not in markup
         assert not re.search(r"https?://|//[a-z0-9.-]+\.(?:css|js|svg|png|jpg|woff2?)", markup, re.I)
+
+
+@pytest.mark.parametrize("color", ("rgb(1, 2, 3)", "hsl(1 2% 3%)", "red"))
+def test_palette_guard_rejects_unapproved_function_and_named_colors(color):
+    with pytest.raises(AssertionError):
+        _assert_only_governed_colors(
+            f"<style>:root{{--accent-tint:rgba(235,108,54,.08)}}.sample{{color:{color}}}</style>"
+        )
