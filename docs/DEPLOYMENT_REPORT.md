@@ -47,7 +47,7 @@ Paths below are repository-relative and were regenerated from the canonical clon
 | Web Visual desktop/mobile and interaction | PASS | `test-results/acceptance-artifacts/web-visual-{desktop,mobile}.png` |
 | Excalidraw bad -> fixed QA | PASS | `test-results/acceptance-artifacts/excalidraw.png` |
 
-Canonical evidence: **8/8 acceptance rows PASS; 78/78 automated tests PASS; 6/6 Skill links resolve and validators PASS**. An isolated clean `npm ci --ignore-scripts` installed 434 packages from the public npm registry. Canonical HEAD is `1d19c3a51a7ecab8d7d40ac0f0b058660061e10d`, and the tracked working tree is clean after verification.
+Canonical evidence: **8/8 acceptance rows PASS; 78/78 automated tests PASS; 6/6 Skill links resolve and validators PASS**. An isolated clean `npm ci --ignore-scripts` installed 434 packages from the public npm registry. The verified implementation/evidence commit is `1d19c3a51a7ecab8d7d40ac0f0b058660061e10d`; later commits only finalize this report. The tracked working tree is clean after verification.
 
 ## Created Files
 
