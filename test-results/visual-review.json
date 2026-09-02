@@ -1,0 +1,86 @@
+{
+  "artifacts": {
+    "test-results/acceptance-artifacts/architecture-desktop.png": {
+      "arrows": "PASS",
+      "balance": "PASS",
+      "clipping": "PASS",
+      "glyphs": "PASS",
+      "notes": "Desktop architecture has clear masks and routed arrows, readable Chinese labels, an external legend, even weight, and no clipped node, arrowhead, or boundary.",
+      "overlap": "PASS",
+      "sha256": "ae726396f008ea8e5c24ac192fc558a1151d03dfe9667e8d641a4e229610e816"
+    },
+    "test-results/acceptance-artifacts/architecture-mobile.png": {
+      "arrows": "PASS",
+      "balance": "PASS",
+      "clipping": "PASS",
+      "glyphs": "PASS",
+      "notes": "Mobile architecture reflows vertically with readable Chinese, separated nodes and arrow labels, and no horizontal clipping; the viewport naturally continues by vertical scroll.",
+      "overlap": "PASS",
+      "sha256": "1fb05051b5ece7babc504408b0e64f55054e8f629faf31561ac79f3c75b2ad6f"
+    },
+    "test-results/acceptance-artifacts/excalidraw.png": {
+      "arrows": "PASS",
+      "balance": "PASS",
+      "clipping": "PASS",
+      "glyphs": "PASS",
+      "notes": "The fixed scene has distinct aligned nodes, two unambiguous arrows through whitespace, readable Chinese, visible export padding, and balanced supporting labels.",
+      "overlap": "PASS",
+      "sha256": "64b938814ee3763a2db583c40136abb7cba0ca9779458ccf062d513e3bb3f5e3"
+    },
+    "test-results/acceptance-artifacts/flow.svg": {
+      "arrows": "PASS",
+      "balance": "PASS",
+      "clipping": "PASS",
+      "glyphs": "PASS",
+      "notes": "Original 1524x276 D2 SVG was rendered locally in Chrome for inspection; the return loop, edge labels, Chinese glyphs, spacing, and canvas bounds are clear.",
+      "overlap": "PASS",
+      "sha256": "b81aef8e011eee674274d8fd5d01f4b25b16dfffb1ae327371d66847a0aaa3de"
+    },
+    "test-results/acceptance-artifacts/graphviz.png": {
+      "arrows": "PASS",
+      "balance": "PASS",
+      "clipping": "PASS",
+      "glyphs": "PASS",
+      "notes": "The wide linear dependency graph uses its panoramic canvas efficiently; every bilingual node and edge label is legible with distinct arrowheads and margins.",
+      "overlap": "PASS",
+      "sha256": "5576b6604815e7ebf1ff7d0ef856dd8023a5afe199a3bf1c4ac5fbd995b18114"
+    },
+    "test-results/acceptance-artifacts/knowledge.png": {
+      "arrows": "PASS",
+      "balance": "PASS",
+      "clipping": "PASS",
+      "glyphs": "PASS",
+      "notes": "The knowledge map has readable Chinese and Latin labels, clean branch routing, no collisions or clipped arrowheads, and a balanced top-to-bottom hierarchy.",
+      "overlap": "PASS",
+      "sha256": "07497ea997bce1282c6d578dc7992f1196a201f243f3b1d0f92d132563b3d384"
+    },
+    "test-results/acceptance-artifacts/trend.png": {
+      "arrows": "PASS",
+      "balance": "PASS",
+      "clipping": "PASS",
+      "glyphs": "PASS",
+      "notes": "Chinese title, legend, months, and unit render without missing glyphs; points and axes are separated, unclipped, and proportioned to the data. No arrows apply.",
+      "overlap": "PASS",
+      "sha256": "1742e297e402a4ea92f5526bc431196989f6f35056360a99ff87fef7651e3008"
+    },
+    "test-results/acceptance-artifacts/web-visual-desktop.png": {
+      "arrows": "PASS",
+      "balance": "PASS",
+      "clipping": "PASS",
+      "glyphs": "PASS",
+      "notes": "Desktop report hierarchy, three-column flow arrows, Chinese typography, cards, and control placement are clean and balanced with no visible clipping or overlap.",
+      "overlap": "PASS",
+      "sha256": "bea9477662890abc67316253bb0040a1877cebe7e4e6c588e056b5c8140dd2f7"
+    },
+    "test-results/acceptance-artifacts/web-visual-mobile.png": {
+      "arrows": "PASS",
+      "balance": "PASS",
+      "clipping": "PASS",
+      "glyphs": "PASS",
+      "notes": "Mobile report title wraps intentionally, Chinese paragraphs and controls remain readable, cards fit the viewport, and content continues vertically without horizontal clipping.",
+      "overlap": "PASS",
+      "sha256": "546085c4f72a24c25383874700715cfab5c86d5944aa596917215446d9817f87"
+    }
+  },
+  "version": 1
+}

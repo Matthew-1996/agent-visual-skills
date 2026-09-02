@@ -1,0 +1,19 @@
+digraph chinese_dependencies {
+  rankdir=LR;
+  graph [pad="0.3", nodesep="0.45", ranksep="0.8"];
+  node [shape=box, style="rounded,filled", fillcolor="#E8F0FE", color="#355C9A", fontname="PingFang SC"];
+  edge [color="#607D9D", fontname="PingFang SC"];
+
+  source [label="本地来源"];
+  parser [label="解析器"];
+  policy [label="隐私检查"];
+  renderer [label="Graphviz 渲染"];
+  validator [label="输出验证"];
+  deliverable [label="可交付成果"];
+
+  source -> parser [label="读取"];
+  parser -> policy [label="分类"];
+  policy -> renderer [label="允许本地"];
+  renderer -> validator [label="PNG / SVG"];
+  validator -> deliverable [label="通过"];
+}
