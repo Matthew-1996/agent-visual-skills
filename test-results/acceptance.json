@@ -12,7 +12,7 @@
         "output": "test-results/acceptance-artifacts/knowledge.svg",
         "regenerated": true,
         "stderr": "",
-        "stdout": "Generating single mermaid chart"
+        "stdout": ""
       },
       {
         "command": "tools/bin/render-diagram diagram --lang mermaid --in tests/fixtures/knowledge-map.mmd --out test-results/acceptance-artifacts/knowledge.png",
@@ -20,13 +20,13 @@
         "output": "test-results/acceptance-artifacts/knowledge.png",
         "regenerated": true,
         "stderr": "",
-        "stdout": "Generating single mermaid chart"
+        "stdout": ""
       }
     ],
     "dimensions": {
       "test-results/acceptance-artifacts/knowledge.png": {
         "height": 382,
-        "width": 716
+        "width": 723
       }
     },
     "exit_code": 0,
@@ -59,8 +59,8 @@
     },
     "result": "PASS",
     "sha256": {
-      "test-results/acceptance-artifacts/knowledge.png": "07497ea997bce1282c6d578dc7992f1196a201f243f3b1d0f92d132563b3d384",
-      "test-results/acceptance-artifacts/knowledge.svg": "14e2114c79b7b1dcccfa0de30a0539c748727efe07ea59cb4f14cd721bff356d"
+      "test-results/acceptance-artifacts/knowledge.png": "3d590232c08e2d142d1a7efa2653a99b942baffc9ba097b7feb2c189f86df102",
+      "test-results/acceptance-artifacts/knowledge.svg": "7c44aa59eba3cac9976dfc817069c76171465d9d81eb235b6218c77756262e0c"
     }
   },
   {
@@ -417,7 +417,7 @@
         "output": "test-results/acceptance-artifacts/knowledge.png",
         "regenerated": true,
         "stderr": "",
-        "stdout": "Generating single mermaid chart"
+        "stdout": ""
       },
       {
         "command": "tools/bin/render-diagram diagram --lang d2 --in tests/fixtures/chinese-flow.d2 --out test-results/acceptance-artifacts/flow.svg",
@@ -467,7 +467,7 @@
       },
       "test-results/acceptance-artifacts/knowledge.png": {
         "height": 382,
-        "width": 716
+        "width": 723
       },
       "test-results/acceptance-artifacts/trend.png": {
         "height": 675,
@@ -599,7 +599,7 @@
       "test-results/acceptance-artifacts/excalidraw.png": "b52646a9540f0a8d8b81697a3be08b71a1abe4cd8b7a45d59dffce3074b2f3f7",
       "test-results/acceptance-artifacts/flow.svg": "0bdac4ea643e2cca84ef831d85c62cf375c042ad56d3ee8186e9a92c7412e7bb",
       "test-results/acceptance-artifacts/graphviz.png": "648d56cbd5fdde795ea72ccdf54a2a256f819ab2e9fde12c20119dd220c46eba",
-      "test-results/acceptance-artifacts/knowledge.png": "07497ea997bce1282c6d578dc7992f1196a201f243f3b1d0f92d132563b3d384",
+      "test-results/acceptance-artifacts/knowledge.png": "3d590232c08e2d142d1a7efa2653a99b942baffc9ba097b7feb2c189f86df102",
       "test-results/acceptance-artifacts/trend.png": "5b435fff4bbb2313eb422913093827d09a1901bf4eecde0d195686ee07c24398"
     }
   },

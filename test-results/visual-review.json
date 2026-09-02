@@ -52,7 +52,7 @@
       "glyphs": "PASS",
       "notes": "The knowledge map has readable Chinese and Latin labels, clean branch routing, no collisions or clipped arrowheads, and a balanced top-to-bottom hierarchy.",
       "overlap": "PASS",
-      "sha256": "07497ea997bce1282c6d578dc7992f1196a201f243f3b1d0f92d132563b3d384"
+      "sha256": "3d590232c08e2d142d1a7efa2653a99b942baffc9ba097b7feb2c189f86df102"
     },
     "test-results/acceptance-artifacts/trend.png": {
       "arrows": "PASS",
