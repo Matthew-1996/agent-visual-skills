@@ -3,6 +3,7 @@
 .venv/
 node_modules/
 tools/node/node_modules/
+tools/node/dist/
 tools/python/.venv/
 .playwright/
 __pycache__/

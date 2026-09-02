@@ -10,6 +10,7 @@ from .common import validate_output_path, validate_readable_input
 from .browser import screenshot_html
 from .charts import render_chart
 from .diagrams import render_diagram
+from .excalidraw import render_excalidraw
 
 
 OUTPUT_SUFFIXES = {".png", ".svg", ".html"}
@@ -81,6 +82,12 @@ def main(argv: list[str] | None = None) -> int:
     elif args.command == "html":
         try:
             screenshot_html(Path(args.input_path), Path(args.output_path), (args.width, args.height))
+        except (RuntimeError, ValueError) as exc:
+            print(f"visual-render: {exc}", file=sys.stderr)
+            return 1
+    elif args.command == "excalidraw":
+        try:
+            render_excalidraw(Path(args.input_path), Path(args.output_path))
         except (RuntimeError, ValueError) as exc:
             print(f"visual-render: {exc}", file=sys.stderr)
             return 1

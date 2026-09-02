@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.1.0",
   "description": "Local-only JavaScript dependencies for visual rendering",
+  "scripts": {
+    "build": "node scripts/build-excalidraw.mjs"
+  },
   "dependencies": {
     "@excalidraw/excalidraw": "0.18.0",
     "@mermaid-js/mermaid-cli": "11.12.0",
