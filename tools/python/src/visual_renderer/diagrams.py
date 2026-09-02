@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from typing import Literal
 
+from .browser import resolve_chrome
 from .common import run_checked, validate_output_path, validate_readable_input, validate_rendered_output
 
 
@@ -18,7 +19,6 @@ _INPUT_SUFFIXES = {
 _OUTPUT_SUFFIXES = {".svg", ".png"}
 _REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 _MMDC = _REPOSITORY_ROOT / "tools" / "node" / "node_modules" / ".bin" / "mmdc"
-_CHROME = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
 
 
 def _normalise_svg(path: Path) -> None:
@@ -34,7 +34,7 @@ def _normalise_svg(path: Path) -> None:
 
 def _render_mermaid(input_path: Path, output_path: Path) -> None:
     environment = os.environ.copy()
-    environment["PUPPETEER_EXECUTABLE_PATH"] = str(_CHROME)
+    environment["PUPPETEER_EXECUTABLE_PATH"] = str(resolve_chrome())
     run_checked([str(_MMDC), "-i", str(input_path), "-o", str(output_path)], environment=environment)
 
 

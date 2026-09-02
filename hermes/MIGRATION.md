@@ -48,40 +48,52 @@ an Agent brand.
 | generic `sans-serif` fallback | A | Copy unchanged as the final portable fallback. |
 | Codex `SKILL.md` discovery front matter | E | Hermes should use its own adapter/instruction discovery, not Codex discovery. |
 | `tools/scripts/install-codex.sh` and `${CODEX_HOME}/skills` links | E | Codex-only installation; do not run it on Hermes. |
+| `tools/scripts/bootstrap-macos.sh` | C | It requires Homebrew and a fixed macOS Google Chrome application path, so it cannot run on Ubuntu; use the Ubuntu replacement below. |
 | `bash tools/scripts/check-environment.sh` | B | Adapt Chrome detection to the resolved Ubuntu Chromium executable. |
 | `tools/bin/render-diagram <renderer> ...` | B | Keep the CLI contract; configure its browser-dependent renderers for Chromium. |
 | `uv run --with pytest pytest` | A | Run unchanged for repository verification. |
 
-## Ubuntu dependencies
+## Ubuntu replacement for the macOS bootstrap
 
-Run these commands from an Ubuntu machine with `sudo` access. They are
-idempotent package installs; repository dependencies stay in the checkout.
+`bootstrap-macos.sh` is intentionally not portable: it invokes Homebrew and
+requires `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`.
+Run this replacement from an Ubuntu machine with `sudo` access instead.
+System packages provide Graphviz, Chromium, Node/npm, and Noto CJK; D2 and uv
+use their maintained upstream installers, and all JavaScript/Python packages
+remain repository-local.
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y graphviz chromium nodejs npm curl ca-certificates fonts-noto-cjk
 curl -fsSL https://d2lang.com/install.sh | sudo sh -s -- --prefix /usr/local
 curl -LsSf https://astral.sh/uv/install.sh | sh
+export PATH="${HOME}/.local/bin:${PATH}"
 ```
 
-`d2` and `uv` install into the invoking user's PATH by default. For a shared
-Ubuntu host, install those binaries through the host's managed package or
-configuration system instead of copying another user's home-directory files.
-After `uv` is on `PATH`, set up repository-local dependencies:
+For a shared Ubuntu host, install D2 and uv through the host's managed package
+or configuration system instead of copying another user's home-directory files.
+After `uv` is on `PATH`, configure the repository and its browser contract:
 
 ```bash
 cd /path/to/agent-visual-skills
-PUPPETEER_SKIP_DOWNLOAD=true npm --prefix tools/node ci
+export CHROMIUM_BIN="$(command -v chromium)"
+test -x "${CHROMIUM_BIN}"
+PUPPETEER_SKIP_DOWNLOAD=true PUPPETEER_EXECUTABLE_PATH="${CHROMIUM_BIN}" npm --prefix tools/node ci
 uv sync --project tools/python
+npm --prefix tools/node run build
 ```
 
-Confirm the chosen Chromium executable before browser work. Ubuntu commonly
-provides `/usr/bin/chromium`; if it differs, configure the browser bridge with
-the resolved executable path rather than any macOS path:
+`CHROMIUM_BIN` is the first-choice explicit override for both Mermaid and the
+HTML/Excalidraw browser bridge, and it must name an executable. Without it,
+the runtime checks macOS app candidates first, then the local PATH entries
+`chromium`, `chromium-browser`, `google-chrome`, and `google-chrome-stable`.
+Confirm the configured executable and local dependencies before browser work:
 
 ```bash
-command -v chromium
-bash tools/scripts/check-environment.sh
+"${CHROMIUM_BIN}" --version
+d2 version
+dot -V
+tools/bin/render-diagram --help
 ```
 
 The Mac bootstrap may reuse Google Chrome at

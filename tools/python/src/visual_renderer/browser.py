@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from pathlib import Path
+import shutil
 from urllib.parse import urlsplit
 
 from playwright.sync_api import Browser, Page, Route, sync_playwright
@@ -11,9 +13,15 @@ from playwright.sync_api import Browser, Page, Route, sync_playwright
 from .common import validate_output_path, validate_png, validate_readable_input
 
 
-_CHROME_CANDIDATES = (
+_MACOS_BROWSER_CANDIDATES = (
     Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
     Path("/Applications/Chromium.app/Contents/MacOS/Chromium"),
+)
+_LINUX_BROWSER_CANDIDATES = (
+    "chromium",
+    "chromium-browser",
+    "google-chrome",
+    "google-chrome-stable",
 )
 
 
@@ -25,11 +33,26 @@ class BrowserAudit:
 
 
 def resolve_chrome() -> Path:
-    """Locate an already installed Chrome-compatible browser executable."""
-    for candidate in _CHROME_CANDIDATES:
-        if candidate.is_file() and candidate.stat().st_mode & 0o111:
+    """Locate an explicitly selected or locally installed browser executable."""
+    override = os.environ.get("CHROMIUM_BIN")
+    if override:
+        candidate = Path(override).expanduser()
+        if candidate.is_file() and os.access(candidate, os.X_OK):
             return candidate
-    raise RuntimeError("local Chrome executable is unavailable; install Google Chrome before rendering")
+        raise RuntimeError("CHROMIUM_BIN must name an executable local browser")
+
+    for candidate in _MACOS_BROWSER_CANDIDATES:
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return candidate
+    for command in _LINUX_BROWSER_CANDIDATES:
+        resolved = shutil.which(command)
+        if resolved:
+            candidate = Path(resolved)
+            if candidate.is_file() and os.access(candidate, os.X_OK):
+                return candidate
+    raise RuntimeError(
+        "local browser executable is unavailable; set CHROMIUM_BIN or install Chromium/Google Chrome"
+    )
 
 
 def _load_page(page: Page, input_path: Path) -> tuple[list[str], list[str]]:
