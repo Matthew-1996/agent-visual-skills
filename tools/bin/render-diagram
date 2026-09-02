@@ -3,5 +3,11 @@ set -euo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd -- "$script_dir/../.." && pwd)"
+renderer="$repo_root/tools/python/.venv/bin/visual-render"
 
-exec uv run --project "$repo_root/tools/python" visual-render "$@"
+if [[ ! -x "$renderer" ]]; then
+  printf 'render-diagram: local renderer runtime is unavailable. Run tools/scripts/bootstrap-macos.sh first.\n' >&2
+  exit 127
+fi
+
+exec "$renderer" "$@"
