@@ -1,6 +1,34 @@
 # Visual Communication Layer
 
-A reusable, Agent-agnostic visual communication layer for choosing the least-complex representation that materially improves understanding. It defaults to prose, keeps sensitive rendering local, and preserves editable source beside PNG, SVG, HTML, or `.excalidraw` deliverables.
+![Visual Communication Layer — local-first routing for visual work](docs/assets/readme-hero.svg)
+
+A reusable, Agent-agnostic visual communication layer for choosing the
+least-complex representation that materially improves understanding. It
+defaults to prose, keeps sensitive rendering local, and preserves editable
+source beside PNG, SVG, HTML, or `.excalidraw` deliverables.
+
+> 中文简介：这是一套可长期复用的 Agent 视觉表达系统。它先判断是否值得画，
+> 再选择一个最低充分复杂度的专用 Skill，默认在本地完成渲染、检查与交付。
+
+## How it works
+
+![One router selects one of five specialist visual skills](docs/assets/system-overview.svg)
+
+The router never creates a visual merely to fill a quota. It selects one
+primary representation, applies shared privacy and Editorial v1.1 rules, and
+hands the task to exactly one specialist. Designed outputs stay self-contained
+and locally previewable by default.
+
+## Demo
+
+[![Editorial v1.1 architecture demo rendered in a local browser](docs/assets/editorial-v11-demo.png)](examples/editorial-v1-system-architecture.html)
+
+This screenshot is rendered from the repository's self-contained
+[`editorial-v1-system-architecture.html`](examples/editorial-v1-system-architecture.html).
+The HTML is the editable source of truth: it uses inline CSS and SVG, system
+fonts, accessible diagram labels, and no remote assets. Start new architecture
+work from the
+[`architecture-diagram` template](codex/skills/architecture-diagram/assets/template.html).
 
 ## Included Codex Skills
 

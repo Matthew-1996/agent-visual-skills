@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="600" viewBox="0 0 1280 600" role="img" aria-labelledby="system-overview-title system-overview-desc">
+  <title id="system-overview-title">Visual communication skill routing architecture</title>
+  <desc id="system-overview-desc">Shared governance guides visual-communication, which routes to one of five specialist skills and produces a local editable artifact.</desc>
+  <defs><marker id="system-overview-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#4f5d75"/></marker></defs>
+  <rect x="1" y="1" width="1278" height="598" rx="8" fill="#f5f5f5" stroke="#bfc0c0" stroke-width="2"/>
+  <text x="40" y="44" fill="#7a8399" font-family="Menlo, Monaco, monospace" font-size="12" font-weight="700" letter-spacing="2">ONE ROUTER · FIVE SPECIALISTS · ONE LOCAL DELIVERY CONTRACT</text>
+
+  <g fill="none" stroke="#4f5d75" stroke-width="2" marker-end="url(#system-overview-arrow)">
+    <path d="M280 136H456"/><path d="M1000 136H824"/>
+    <path d="M520 224V284Q520 292 512 292H144Q136 292 136 300V352"/>
+    <path d="M576 224V312Q576 320 568 320H384Q376 320 376 328V352"/>
+    <path d="M640 224V352"/>
+    <path d="M704 224V312Q704 320 712 320H896Q904 320 904 328V352"/>
+    <path d="M760 224V284Q760 292 768 292H1136Q1144 292 1144 300V352"/>
+  </g>
+
+  <g font-family="Arial, sans-serif">
+    <rect x="40" y="88" width="240" height="96" rx="8" fill="#f5f5f5" stroke="#bfc0c0"/><text x="64" y="124" fill="#2d3142" font-size="16" font-weight="700">Shared governance</text><text x="64" y="152" fill="#4f5d75" font-size="13">privacy · selection · acceptance</text>
+    <rect x="456" y="64" width="368" height="160" rx="8" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="2"/><text x="480" y="108" fill="#eb6c36" font-size="20" font-weight="700">visual-communication</text><text x="480" y="144" fill="#4f5d75" font-size="14">Is a visual worth the reader's attention?</text><text x="480" y="172" fill="#4f5d75" font-size="14">Choose exactly one lowest-sufficient specialist.</text><text x="480" y="200" fill="#7a8399" font-family="Menlo, Monaco, monospace" font-size="11">LEVEL 1 / LEVEL 2 / LEVEL 3</text>
+    <rect x="1000" y="88" width="240" height="96" rx="8" fill="#f5f5f5" stroke="#bfc0c0"/><text x="1024" y="124" fill="#2d3142" font-size="16" font-weight="700">Editorial v1.1</text><text x="1024" y="152" fill="#4f5d75" font-size="13">tokens · geometry · optical QA</text>
+  </g>
+
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <g><rect x="40" y="352" width="192" height="120" rx="8" fill="#f5f5f5" stroke="#bfc0c0"/><text x="136" y="396" fill="#2d3142" font-size="14" font-weight="700">excalidraw-diagram</text><text x="136" y="428" fill="#4f5d75" font-size="12">editable spatial thinking</text><text x="136" y="452" fill="#7a8399" font-family="Menlo, Monaco, monospace" font-size="10">LEVEL 2</text></g>
+    <g><rect x="280" y="352" width="192" height="120" rx="8" fill="#f5f5f5" stroke="#bfc0c0"/><text x="376" y="396" fill="#2d3142" font-size="14" font-weight="700">diagram-rendering</text><text x="376" y="428" fill="#4f5d75" font-size="12">flows, topology, charts</text><text x="376" y="452" fill="#7a8399" font-family="Menlo, Monaco, monospace" font-size="10">LEVEL 2</text></g>
+    <g><rect x="544" y="352" width="192" height="120" rx="8" fill="#f5f5f5" stroke="#bfc0c0"/><text x="640" y="396" fill="#2d3142" font-size="14" font-weight="700">architecture-diagram</text><text x="640" y="428" fill="#4f5d75" font-size="12">systems and boundaries</text><text x="640" y="452" fill="#7a8399" font-family="Menlo, Monaco, monospace" font-size="10">LEVEL 3</text></g>
+    <g><rect x="808" y="352" width="192" height="120" rx="8" fill="#f5f5f5" stroke="#bfc0c0"/><text x="904" y="396" fill="#2d3142" font-size="14" font-weight="700">infographic</text><text x="904" y="428" fill="#4f5d75" font-size="12">polished static stories</text><text x="904" y="452" fill="#7a8399" font-family="Menlo, Monaco, monospace" font-size="10">LEVEL 3</text></g>
+    <g><rect x="1048" y="352" width="192" height="120" rx="8" fill="#f5f5f5" stroke="#bfc0c0"/><text x="1144" y="396" fill="#2d3142" font-size="14" font-weight="700">web-visual</text><text x="1144" y="428" fill="#4f5d75" font-size="12">interactive local reports</text><text x="1144" y="452" fill="#7a8399" font-family="Menlo, Monaco, monospace" font-size="10">LEVEL 3</text></g>
+  </g>
+
+  <rect x="40" y="520" width="1200" height="48" rx="8" fill="#ececec" stroke="#2d3142"/>
+  <text x="640" y="550" fill="#2d3142" font-family="Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">Editable source + one self-contained local artifact · no hosted renderer</text>
+</svg>

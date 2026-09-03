@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360" role="img" aria-labelledby="readme-hero-title readme-hero-desc">
+  <title id="readme-hero-title">Visual Communication Layer</title>
+  <desc id="readme-hero-desc">A local-first visual communication system with one router and five specialist skills.</desc>
+  <defs>
+    <marker id="readme-hero-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#4f5d75"/></marker>
+  </defs>
+  <rect x="1" y="1" width="1278" height="358" rx="8" fill="#f5f5f5" stroke="#bfc0c0" stroke-width="2"/>
+  <rect x="40" y="40" width="8" height="56" rx="4" fill="#eb6c36"/>
+  <text x="72" y="60" fill="#eb6c36" font-family="Menlo, Monaco, monospace" font-size="12" font-weight="700" letter-spacing="2.4">AGENT-AGNOSTIC · LOCAL-FIRST</text>
+  <text x="72" y="120" fill="#2d3142" font-family="Georgia, 'Times New Roman', serif" font-size="38" font-weight="700">Visual Communication Layer</text>
+  <text x="72" y="160" fill="#4f5d75" font-family="Arial, sans-serif" font-size="18">Local-first routing for diagrams, charts, and visual reports.</text>
+
+  <g font-family="Menlo, Monaco, monospace" font-size="12" font-weight="600">
+    <rect x="72" y="232" width="128" height="32" rx="6" fill="#ececec" stroke="#bfc0c0"/><text x="136" y="253" fill="#2d3142" text-anchor="middle">6 CODEX SKILLS</text>
+    <rect x="216" y="232" width="120" height="32" rx="6" fill="#ececec" stroke="#bfc0c0"/><text x="276" y="253" fill="#2d3142" text-anchor="middle">OFFLINE HTML</text>
+    <rect x="352" y="232" width="128" height="32" rx="6" fill="#ececec" stroke="#bfc0c0"/><text x="416" y="253" fill="#2d3142" text-anchor="middle">EDITORIAL V1.1</text>
+  </g>
+  <text x="72" y="308" fill="#7a8399" font-family="Arial, sans-serif" font-size="14">Route → render locally → inspect → deliver editable source</text>
+
+  <g fill="none" stroke="#4f5d75" stroke-width="2">
+    <path d="M856 180H888" marker-end="url(#readme-hero-arrow)"/>
+    <path d="M1032 180H1080" marker-end="url(#readme-hero-arrow)"/>
+  </g>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <rect x="680" y="116" width="176" height="128" rx="8" fill="#f5f5f5" stroke="#bfc0c0" stroke-width="2"/>
+    <circle cx="768" cy="152" r="12" fill="none" stroke="#4f5d75" stroke-width="2"/><path d="M762 152H774M768 146V158" stroke="#4f5d75" stroke-width="2"/>
+    <text x="768" y="192" fill="#2d3142" font-size="16" font-weight="700">UNDERSTAND</text><text x="768" y="216" fill="#7a8399" font-size="12">content + privacy</text>
+
+    <rect x="888" y="96" width="144" height="168" rx="8" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="2"/>
+    <circle cx="960" cy="140" r="4" fill="#eb6c36"/><circle cx="936" cy="164" r="4" fill="none" stroke="#eb6c36" stroke-width="2"/><circle cx="984" cy="164" r="4" fill="none" stroke="#eb6c36" stroke-width="2"/><path d="M957 143L939 161M963 143L981 161" stroke="#eb6c36" stroke-width="2"/>
+    <text x="960" y="208" fill="#eb6c36" font-size="16" font-weight="700">ROUTE</text><text x="960" y="232" fill="#4f5d75" font-size="12">lowest sufficient level</text>
+
+    <rect x="1080" y="116" width="160" height="128" rx="8" fill="#f5f5f5" stroke="#bfc0c0" stroke-width="2"/>
+    <path d="M1144 144H1176V168H1144Z" fill="none" stroke="#4f5d75" stroke-width="2"/><path d="M1152 176H1168" stroke="#4f5d75" stroke-width="2"/>
+    <text x="1160" y="208" fill="#2d3142" font-size="16" font-weight="700">DELIVER</text><text x="1160" y="232" fill="#7a8399" font-size="12">one local artifact</text>
+  </g>
+</svg>
